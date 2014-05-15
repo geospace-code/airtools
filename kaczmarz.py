@@ -25,7 +25,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
     # Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
     # Natterer, F. "The mathematics of computed tomography", SIAM, 2001
     if dbglvl>0: 
-        print('Lambda Relaxation: ' + str(lambdaRelax))        
+        print(('Lambda Relaxation: ' + str(lambdaRelax)))        
         
     m,n = A.shape
    
