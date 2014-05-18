@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
+#import matplotlib.pyplot as plt
 
 def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,nonneg=True,dbglvl=0):
     # TODO: add randomized ART, and other variants
@@ -46,7 +45,9 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         print("didn't understand stopmode command, defaulted to maximum iterations")
 
 #%% disregard all-zero columns of A
-    goodRows = np.where( np.any(A>0,axis=1) ) #we want indices
+    goodRows = np.where( np.any(A>0,axis=1) )[0] #we want indices
+#%% speedup: compute norms along columns at once, and retrieve
+    RowNormSq = np.linalg.norm(A,ord=2,axis=1)**2
 
     x = np.copy(x0) # we'll leave the original x0 alone, and make a copy in x
     iIter = 0
@@ -55,10 +56,11 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         for iRow in goodRows:  #only not all-zero rows
         #for iRow in range(m):    #for each row
             #denominator AND numerator are scalar!
-            den = np.linalg.norm(A[iRow,:],2)**2
+            #den = np.linalg.norm(A[iRow,:],2)**2
+            #print(RowNormSq[iRow] == den)
             num = ( b[iRow] - A[iRow,:].dot(x) )
-
-            x = x + np.dot( lambdaRelax * num/den , A[iRow,:] )
+            #x = x + np.dot( lambdaRelax * num/den , A[iRow,:] )
+            x = x + np.dot( lambdaRelax * num/RowNormSq[iRow] , A[iRow,:] )
 
             if nonneg: x[x<0] = 0
 
