@@ -29,15 +29,15 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
     if dbglvl>0:
         print(('Lambda Relaxation: ' + str(lambdaRelax)))
 
-    m,n = A.shape
+    n = A.shape[1] #only need rows
 
     if x0 is None: # we'll use zeros
         print('kaczmarz: using zeros to initialize x0')
-        x0 = np.zeros(n) #1-D vector
+        x0 = np.zeros(n,order='F') #1-D vector
 
     if stopmode is None: # just use number of iterations
         sr = 0
-    elif stopmode == 'MDP':
+    elif stopmode == 'MDP' or stopmode== 'DP':
         sr = 1
         if taudelta==0: print('you used tauDelta=0, which effectively disables Morozov discrepancy principle')
     else:
@@ -54,7 +54,6 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
     stop = False #FIXME will always run at least once
     while not stop: #for each iteration
         for iRow in goodRows:  #only not all-zero rows
-        #for iRow in range(m):    #for each row
             #denominator AND numerator are scalar!
             #den = np.linalg.norm(A[iRow,:],2)**2
             #print(RowNormSq[iRow] == den)
@@ -65,14 +64,14 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             if nonneg: x[x<0] = 0
 
         residual = b - A.dot(x)
-#            if True:
-#                plt.plot(x)
-#                plt.show(True)
         iIter += 1
         #handle stop rule
         stop = iIter > maxIter
         if sr == 0: # no stopping till iterations are done
             pass
         elif sr == 1:
-            stop |= np.linalg.norm(residual,2) <= taudelta
+            residualNorm = np.linalg.norm(residual,2)
+            stop |= (residualNorm <= taudelta)
+        if iIter % 200 == 0: #print update every N loop iterations for user comfort
+            print( ('kaczmarz: Iteration ' + str(iIter) + ',  ||residual|| = ' + str(residualNorm) ) ) 
     return x,residual,iIter-1
