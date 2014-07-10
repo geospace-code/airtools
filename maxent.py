@@ -75,7 +75,7 @@ def maxent(A,b,lamb,w=None,x0=None):
         it = 0
         phi0 = p.T.dot(g)
         data = np.zeros((maxit,3),order='F')
-        X=np.zeros((3,maxit),order='F')
+        X=np.zeros((n,maxit),order='F')
         
         while (norm(delta_x,2) > minstep*norm(x,2) and dF > flat and it < maxit and phi0 < 0):
             # Compute some CG quantities.
