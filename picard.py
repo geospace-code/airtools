@@ -1,7 +1,6 @@
 import numpy as np
 from warnings import warn
 import matplotlib.pyplot as plt
-import pdb
 #PICARD Visual inspection of the Picard condition.
 #
 # eta = picard(U,s,b,d)
@@ -27,11 +26,9 @@ def picard(U,s,b,d=0):
     if U.flags['F_CONTIGUOUS'] is False:
         raise RuntimeError('U must be Fortran-ordered for this function to work! try U = np.copy(U,order="F")')
 
-    pdb.set_trace()
     n,ps = np.atleast_2d(s).T.shape # the transpose is because Numpy 1.8.1 has no order='F' option for atleast2d
 
     beta = np.abs( U[:,:n].T.dot(b) )
-    pdb.set_trace()
     eta = np.zeros(n,order='F')
 
     if ps==2: s = s[:,0] / s[:,1]
