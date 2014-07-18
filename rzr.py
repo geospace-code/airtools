@@ -24,13 +24,12 @@ def rzr(A,b=None,Nthr=0):
 
     s = np.sum(A>0,axis=1) #number of non-zero elements per row
     goodInd = np.where(s>Nthr)[0]
-    A = A[goodInd,...]
-    
+    A = A[goodInd,:]
+
     if len(goodInd) < A.shape[0]:
         print('rzr: removed ' + str(A.shape[0]-len(goodInd)) + ' zero rows from matrix and observation')
-
-    if len(b)!=1:
+        print(len(goodInd) + ' rows remaining')
+    if len(np.atleast_1d(b))!=1:
         b = b[goodInd]
-    
+
     return A,b,goodInd
-    
