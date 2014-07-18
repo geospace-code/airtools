@@ -38,11 +38,8 @@ def maxent(A,b,lamb,w=None,x0=None):
 #%% Initialization.
     m,n = A.shape
     lamb = np.atleast_1d(lamb)
-    #if np.isscalar(lamb):
-    #    Nlambda = 1
-    #    lamb = np.array([lamb])
-    #else:
     Nlambda = len(lamb)
+
         
     x_lambda = np.zeros((n,Nlambda),order='F')
     F = np.zeros(maxit,order='F')
