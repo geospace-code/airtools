@@ -1,10 +1,13 @@
-import numpy as np
-#import matplotlib.pyplot as plt
+from numpy import zeros, where, any, squeeze, unique,copy,asarray
+from numpy.linalg import norm
+from scipy.sparse import issparse
 
 def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,nonneg=True,dbglvl=0):
     # TODO: add randomized ART, and other variants
     # Michael Hirsch May 2014
     # GPL v3+ license
+    #
+    # tested with Dense and Sparse arrays. (Aug 2014)
     #
     # inputs:
     # A:  M x N 2-D projection matrix
@@ -33,7 +36,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
 
     if x0 is None: # we'll use zeros
         print('kaczmarz: using zeros to initialize x0')
-        x0 = np.zeros(n,order='F') #1-D vector
+        x0 = zeros(n,order='F') #1-D vector
 
     if stopmode is None: # just use number of iterations
         sr = 0
@@ -45,11 +48,16 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         print("didn't understand stopmode command, defaulted to maximum iterations")
 
 #%% disregard all-zero columns of A
-    goodRows = np.where( np.any(A>0,axis=1) )[0] #we want indices
-#%% speedup: compute norms along columns at once, and retrieve
-    RowNormSq = np.linalg.norm(A,ord=2,axis=1)**2
+    if issparse(A):
+        goodRows = unique(A.nonzero()[0])
+        # speedup: compute norms along columns at once, and retrieve
+        RowNormSq = squeeze(asarray(A.multiply(A).sum(axis=1))) # 50 times faster than dense for 1024 x 100000 A
+    else: #is dense A
+        goodRows = where( any(A>0,axis=1) )[0] #we want indices
+        # speedup: compute norms along columns at once, and retrieve
+        RowNormSq = norm(A,ord=2,axis=1)**2 #timeit same for norm() and A**2.sum(axis=1)
 
-    x = np.copy(x0) # we'll leave the original x0 alone, and make a copy in x
+    x = copy(x0) # we'll leave the original x0 alone, and make a copy in x
     iIter = 0
     stop = False #FIXME will always run at least once
     while not stop: #for each iteration
@@ -59,7 +67,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             #print(RowNormSq[iRow] == den)
             num = ( b[iRow] - A[iRow,:].dot(x) )
             #x = x + np.dot( lambdaRelax * num/den , A[iRow,:] )
-            x = x + np.dot( lambdaRelax * num/RowNormSq[iRow] , A[iRow,:] )
+            x += lambdaRelax * num/RowNormSq[iRow] *  A[iRow,:] #first two terms are scalar always
 
             if nonneg: x[x<0] = 0
 
@@ -70,8 +78,8 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         if sr == 0: # no stopping till iterations are done
             pass
         elif sr == 1:
-            residualNorm = np.linalg.norm(residual,2)
+            residualNorm = norm(residual,2)
             stop |= (residualNorm <= taudelta)
         if iIter % 200 == 0: #print update every N loop iterations for user comfort
-            print( ('kaczmarz: Iteration ' + str(iIter) + ',  ||residual|| = ' + str(residualNorm) ) ) 
+            print( ('kaczmarz: Iteration ' + str(iIter) + ',  ||residual|| = ' + str(residualNorm) ) )
     return x,residual,iIter-1
