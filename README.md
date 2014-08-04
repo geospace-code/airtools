@@ -10,3 +10,4 @@ Notes:
 picard.py: The resulting graph does not exactly match Matlab results. This may originate from that 
 with Numpy 1.8.1 the output of numpy.linalg.svd and scipy.linalg.svd do NOT exactly match Matlab.
 
+maxent.py: Maximum Entropy Regularization
