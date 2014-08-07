@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 # ported to Python by Michael Hirsch
 def picard(U,s,b,d=0):
     if U.flags['F_CONTIGUOUS'] is False:
-        raise RuntimeError('U must be Fortran-ordered for this function to work! try U = np.copy(U,order="F")')
+        raise RuntimeError('U must be Fortran-ordered for this function to work! try U = np.asfortranarray(U)')
 
     n,ps = np.atleast_2d(s).T.shape # the transpose is because Numpy 1.8.1 has no order='F' option for atleast2d
 
