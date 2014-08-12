@@ -34,31 +34,31 @@ def maxent(A,b,lamb,w=None,x0=None):
     minstep = 1e-12 # Determines the accuracy of x_lambda.
     sigma = 0.5     # Threshold used in descent test.
     tau0 = 1e-3    # Initial threshold used in secant root finder.
-    
+
 #%% Initialization.
     m,n = A.shape
     lamb = np.atleast_1d(lamb)
     Nlambda = len(lamb)
 
-        
+
     x_lambda = np.zeros((n,Nlambda),order='F')
-    F = np.zeros(maxit,order='F')
-    
+    F = np.zeros(maxit)
+
     if (np.min(lamb) <= 0):
         raise RuntimeError('Regularization parameter lambda must be positive')
 
     if w is None:
-        w  = np.ones(n,order='F')
-    
+        w  = np.ones(n)
+
     if x0 is None:
         x0 = np.ones(n)
-    
-    rho = np.empty(Nlambda,order='F')
-    eta = np.empty(Nlambda,order='F')
 
-# Treat each lambda separately.        
+    rho = np.empty(Nlambda)
+    eta = np.empty(Nlambda)
+
+# Treat each lambda separately.
     for j in np.arange(Nlambda):
-        
+
         # Prepare for nonlinear CG iteration.
         l2 = lamb[j]**2
         x  = x0
@@ -66,21 +66,21 @@ def maxent(A,b,lamb,w=None,x0=None):
         g  = 2*A.T.dot(Ax - b) + l2*(1 + np.log(w*x))
         p  = -g
         r  = Ax - b
-        
+
         # Start the nonlinear CG iteration here.
         delta_x = x
         dF = 1
         it = 0
         phi0 = p.T.dot(g)
-        data = np.zeros((maxit,3),order='F')
-        X=np.zeros((n,maxit),order='F')
-        
+        data = np.zeros((maxit,3),dtype=float,order='F')
+        X = np.zeros((n,maxit),dtype=float,order='F')
+
         while (norm(delta_x,2) > minstep*norm(x,2) and dF > flat and it < maxit and phi0 < 0):
             # Compute some CG quantities.
             Ap = A.dot(p)
             gamma = Ap.T.dot(Ap)
             v = A.T.dot(Ap)
-            
+
             # Determine the steplength alpha by "soft" line search in which
             # the minimum of phi(alpha) = p'*g(x + alpha*p) is determined to
             # a certain "soft" tolerance.
@@ -100,13 +100,13 @@ def maxent(A,b,lamb,w=None,x0=None):
                     alpha_right = alpha_right*(1 - delta)
                     h = 1 + alpha_right*p / x
                     delta = delta*2
-      
+
             z = np.log(h)
             phi_right = phi0 + 2*alpha_right*gamma + l2*p.T.dot(z)
             alpha = alpha_right
             phi = phi_right
-            
-            
+
+
             if phi_right <= 0: # Special treatment of the case when phi(alpha_right) = 0.
                 z = np.log(1 + alpha*p/x)
                 g_new = g + l2*z + 2*alpha*v
@@ -142,7 +142,7 @@ def maxent(A,b,lamb,w=None,x0=None):
             p = -g + beta*p
             r = r + alpha*Ap
             phi0 = p.T.dot(g)
-            
+
             # Compute some norms and check for flat minimum.
             rho[j] = norm(r)
             eta[j] = x.T.dot(np.log(w*x))
@@ -151,14 +151,14 @@ def maxent(A,b,lamb,w=None,x0=None):
                 dF = 1
             else:
                 dF = np.abs(F[it] - F[it-flatrange])/np.abs(F[it])
-            
+
             data[it,...] = np.array([F[it],norm(delta_x),norm(g)])
             X[...,it] = x
-    
-        
+
+
             it += 1
-            
-   
+
+
     x_lambda[...,j] = x
-    
-    return x_lambda,rho,eta
+
+    return np.squeeze(x_lambda),rho,eta
