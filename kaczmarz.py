@@ -28,6 +28,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
     # Natterer, F. "The mathematics of computed tomography", SIAM, 2001
 
 #%% user parameters
+    residual = None #init
 
     if dbglvl>0:
         print(('Lambda Relaxation: ' + str(lambdaRelax)))
@@ -38,9 +39,9 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         print('kaczmarz: using zeros to initialize x0')
         x0 = zeros(n,order='F') #1-D vector
 
-    if stopmode is None: # just use number of iterations
+    if stopmode is None or stopmode.lower() =='iter': # just use number of iterations
         sr = 0
-    elif stopmode == 'MDP' or stopmode== 'DP':
+    elif stopmode.lower() == 'mdp' or stopmode.lower()== 'dp':
         sr = 1
         if taudelta==0: print('you used tauDelta=0, which effectively disables Morozov discrepancy principle')
     else:
@@ -72,13 +73,14 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
 
             if nonneg: x[x<0] = 0
 
-        residual = b - A.dot(x)
+
         iIter += 1
         #handle stop rule
         stop = iIter > maxIter
         if sr == 0: # no stopping till iterations are done
             pass
         elif sr == 1:
+            residual = b - A.dot(x)
             residualNorm = norm(residual,2)
             stop |= (residualNorm <= taudelta)
         if iIter % 200 == 0: #print update every N loop iterations for user comfort
