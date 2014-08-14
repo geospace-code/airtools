@@ -49,6 +49,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
 
 #%% disregard all-zero columns of A
     if issparse(A):
+        A = A.tocsr() #save time if it was csc sparse
         goodRows = unique(A.nonzero()[0])
         # speedup: compute norms along columns at once, and retrieve
         RowNormSq = squeeze(asarray(A.multiply(A).sum(axis=1))) # 50 times faster than dense for 1024 x 100000 A
@@ -65,9 +66,9 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             #denominator AND numerator are scalar!
             #den = np.linalg.norm(A[iRow,:],2)**2
             #print(RowNormSq[iRow] == den)
-            num = ( b[iRow] - A[iRow,:].dot(x) )
+            #num = ( b[iRow] - A[iRow,:].dot(x) )
             #x = x + np.dot( lambdaRelax * num/den , A[iRow,:] )
-            x += lambdaRelax * num/RowNormSq[iRow] *  A[iRow,:] #first two terms are scalar always
+            x += lambdaRelax * ( b[iRow] - A[iRow,:].dot(x) ) / RowNormSq[iRow] *  A[iRow,:] #first two terms are scalar always
 
             if nonneg: x[x<0] = 0
 
