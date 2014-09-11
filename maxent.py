@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import norm
+from warnings import warn
 
 # Michael Hirsch port of P.C. Hansen Matlab code
 
@@ -44,7 +45,7 @@ def maxent(A,b,lamb,w=None,x0=None):
     x_lambda = np.zeros((n,Nlambda),order='F')
     F = np.zeros(maxit)
 
-    if (np.min(lamb) <= 0):
+    if (np.any(lamb) <= 0):
         raise RuntimeError('Regularization parameter lambda must be positive')
 
     if w is None:
@@ -117,25 +118,37 @@ def maxent(A,b,lamb,w=None,x0=None):
                 # until the new step is a descent step.
                 t = 1; u = 1; tau = tau0
                 while u > -sigma*t:
+                    uold = u
                     # Use the secant method to improve the root of phi(alpha) = 0
                     # to within an accuracy determined by tau.
+                    phiit = 0
                     while np.abs(phi/phi0) > tau:
+                        phiold = phi; alphaold = alpha
                         alpha = (alpha_left*phi_right - alpha_right*phi_left) / (phi_right - phi_left)
                         z = np.log(1 + alpha*p/x)
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
+                        if phiold == phi and alphaold == alpha:
+                            warn('secant is not converging: abs(phi/phi0) = ' +
+                                 str(np.abs(phi/phi0)) +
+                                 '  terminating phi search on iteration ' + str(phiit))
+                            break
                         if phi > 0:
                             alpha_right = alpha
                             phi_right = phi
                         else:
                             alpha_left  = alpha
-                            phi_left  = phi;
+                            phi_left  = phi
+                        phiit += 1
                     # To check the descent step, compute u = p'*g_new and
                     # t = norm(g_new)^2, where g_new is the gradient at x + alpha*p.
                     g_new = g + l2*z + 2*alpha*v
                     t = g_new.T.dot(g_new)
                     beta = (t - g.T.dot(g_new))/(phi - phi0)
                     u = -t + beta*phi
-                    tau = tau/10
+                    if u==uold:
+                        warn('excessive descent iterations, terminating search on iteration ' + str(phiit))
+                        break
+                    tau = tau/10.
             # Update the iteration vectors.
             g = g_new; delta_x = alpha*p
             x = x + delta_x
