@@ -129,9 +129,9 @@ def maxent(A,b,lamb,w=None,x0=None):
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
                         if phiold == phi and alphaold == alpha:
                             warn('secant is not converging: abs(phi/phi0) = ' +
-                                 str(np.abs(phi/phi0)) +
-                                 '  terminating phi search on iteration ' + str(phiit))
-                            break
+                                 str(np.abs(phi/phi0))) #+
+                                 #'  terminating phi search on iteration ' + str(phiit))
+                            #break
                         if phi > 0:
                             alpha_right = alpha
                             phi_right = phi
@@ -146,8 +146,8 @@ def maxent(A,b,lamb,w=None,x0=None):
                     beta = (t - g.T.dot(g_new))/(phi - phi0)
                     u = -t + beta*phi
                     if u==uold:
-                        warn('excessive descent iterations, terminating search on iteration ' + str(phiit))
-                        break
+                        warn('excessive descent iterations')#, terminating search on iteration ' + str(phiit))
+                        #break
                     tau = tau/10.
             # Update the iteration vectors.
             g = g_new; delta_x = alpha*p
