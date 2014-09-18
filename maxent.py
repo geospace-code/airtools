@@ -117,6 +117,7 @@ def maxent(A,b,lamb,w=None,x0=None):
                 # The regular case: improve the steplength alpha iteratively
                 # until the new step is a descent step.
                 t = 1; u = 1; tau = tau0
+                uit = 0
                 while u > -sigma*t:
                     uold = u
                     # Use the secant method to improve the root of phi(alpha) = 0
@@ -127,11 +128,11 @@ def maxent(A,b,lamb,w=None,x0=None):
                         alpha = (alpha_left*phi_right - alpha_right*phi_left) / (phi_right - phi_left)
                         z = np.log(1 + alpha*p/x)
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
-                        if phiold == phi and alphaold == alpha:
+                        if phiold == phi and alphaold == alpha and phiit>maxit:
                             warn('secant is not converging: abs(phi/phi0) = ' +
-                                 str(np.abs(phi/phi0))) #+
-                                 #'  terminating phi search on iteration ' + str(phiit))
-                            #break
+                                 str(np.abs(phi/phi0)) +
+                                 '  terminating phi search on iteration ' + str(phiit))
+                            break
                         if phi > 0:
                             alpha_right = alpha
                             phi_right = phi
@@ -145,10 +146,11 @@ def maxent(A,b,lamb,w=None,x0=None):
                     t = g_new.T.dot(g_new)
                     beta = (t - g.T.dot(g_new))/(phi - phi0)
                     u = -t + beta*phi
-                    if u==uold:
-                        warn('excessive descent iterations')#, terminating search on iteration ' + str(phiit))
-                        #break
+                    if u==uold and uit>maxit:
+                        warn('excessive descent iterations, terminating search on iteration ' + str(phiit))
+                        break
                     tau = tau/10.
+                    uit+=1
             # Update the iteration vectors.
             g = g_new; delta_x = alpha*p
             x = x + delta_x
