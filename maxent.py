@@ -40,13 +40,13 @@ def maxent(A,b,lamb,w=None,x0=None):
 #%% Initialization.
     m,n = A.shape
     lamb = np.atleast_1d(lamb)
-    Nlambda = len(lamb)
+    Nlambda = lamb.size
 
 
     x_lambda = np.zeros((n,Nlambda),order='F')
     F = np.zeros(maxit)
 
-    if (np.any(lamb) <= 0):
+    if (lamb.any() <= 0):
         raise RuntimeError('Regularization parameter lambda must be positive')
 
     if w is None:
@@ -166,7 +166,7 @@ def maxent(A,b,lamb,w=None,x0=None):
             if it <= flatrange:
                 dF = 1
             else:
-                dF = np.abs(F[it] - F[it-flatrange])/np.abs(F[it])
+                dF = np.absolute(F[it] - F[it-flatrange])/np.abs(F[it])
 
             data[it,...] = np.array([F[it],norm(delta_x),norm(g)])
             X[...,it] = x
@@ -175,6 +175,6 @@ def maxent(A,b,lamb,w=None,x0=None):
             it += 1
 
 
-    x_lambda[...,j] = x
+        x_lambda[...,j] = x
 
-    return np.squeeze(x_lambda),rho,eta
+    return x_lambda.squeeze(),rho,eta
