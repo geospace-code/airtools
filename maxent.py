@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 from numpy.linalg import norm
 from warnings import warn
@@ -37,6 +38,9 @@ def maxent(A,b,lamb,w=None,x0=None):
     sigma = 0.5     # Threshold used in descent test.
     tau0 = 1e-3    # Initial threshold used in secant root finder.
 
+#%% shape variables appropriately
+    b = b.squeeze()
+
 #%% Initialization.
     m,n = A.shape
     lamb = np.atleast_1d(lamb)
@@ -50,10 +54,10 @@ def maxent(A,b,lamb,w=None,x0=None):
         raise RuntimeError('Regularization parameter lambda must be positive')
 
     if w is None:
-        w  = np.ones(n,dtype=float)
+        w  = np.ones(n,dtype=float) #needs to be column vector
 
     if x0 is None:
-        x0 = np.ones(n,dtype=float)
+        x0 = np.ones(n,dtype=float) #needs to be column vector
 
     rho = np.empty(Nlambda,dtype=float)
     eta = np.empty(Nlambda,dtype=float)
@@ -178,3 +182,11 @@ def maxent(A,b,lamb,w=None,x0=None):
         x_lambda[...,j] = x
 
     return x_lambda.squeeze(),rho,eta
+
+if __name__ == '__main__':
+    A = np.array([[1, 2, 0],[0, 4, 3]])
+    b = np.array([8,18])
+    print(A)
+    print(b)
+    x,rho,eta = maxent(A,b,1)
+    print(x)
