@@ -1,4 +1,4 @@
-from numpy import zeros, where, any, squeeze, unique,copy,asarray
+from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
 
@@ -53,13 +53,13 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         A = A.tocsr() #save time if it was csc sparse
         goodRows = unique(A.nonzero()[0])
         # speedup: compute norms along columns at once, and retrieve
-        RowNormSq = squeeze(asarray(A.multiply(A).sum(axis=1))) # 50 times faster than dense for 1024 x 100000 A
+        RowNormSq = asarray(A.multiply(A).sum(axis=1)).squeeze() # 50 times faster than dense for 1024 x 100000 A
     else: #is dense A
-        goodRows = where( any(A>0,axis=1) )[0] #we want indices
+        goodRows = where( (A>0).any(axis=1) )[0] #we want indices
         # speedup: compute norms along columns at once, and retrieve
         RowNormSq = norm(A,ord=2,axis=1)**2 #timeit same for norm() and A**2.sum(axis=1)
 
-    x = copy(x0) # we'll leave the original x0 alone, and make a copy in x
+    x = x0.copy() # we'll leave the original x0 alone, and make a copy in x
     iIter = 0
     stop = False #FIXME will always run at least once
     while not stop: #for each iteration
