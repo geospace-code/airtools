@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import numpy as np
+from __future__ import print_function, division
+from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array
 from numpy.linalg import norm
 from warnings import warn
 
@@ -43,33 +44,33 @@ def maxent(A,b,lamb,w=None,x0=None):
 
 #%% Initialization.
     m,n = A.shape
-    lamb = np.atleast_1d(lamb)
+    lamb = atleast_1d(lamb)
     Nlambda = lamb.size
 
 
-    x_lambda = np.zeros((n,Nlambda),order='F')
-    F = np.zeros(maxit)
+    x_lambda = zeros((n,Nlambda),order='F')
+    F = zeros(maxit)
 
     if (lamb.any() <= 0):
         raise RuntimeError('Regularization parameter lambda must be positive')
 
     if w is None:
-        w  = np.ones(n,dtype=float) #needs to be column vector
+        w  = ones(n,dtype=float) #needs to be column vector
 
     if x0 is None:
-        x0 = np.ones(n,dtype=float) #needs to be column vector
+        x0 = ones(n,dtype=float) #needs to be column vector
 
-    rho = np.empty(Nlambda,dtype=float)
-    eta = np.empty(Nlambda,dtype=float)
+    rho = empty(Nlambda,dtype=float)
+    eta = empty(Nlambda,dtype=float)
 
 # Treat each lambda separately.
-    for j in np.arange(Nlambda):
+    for j in range(Nlambda):
 
         # Prepare for nonlinear CG iteration.
         l2 = lamb[j]**2
         x  = x0
         Ax = A.dot(x)
-        g  = 2*A.T.dot(Ax - b) + l2*(1 + np.log(w*x))
+        g  = 2*A.T.dot(Ax - b) + l2*(1 + log(w*x))
         p  = -g
         r  = Ax - b
 
@@ -78,8 +79,8 @@ def maxent(A,b,lamb,w=None,x0=None):
         dF = 1
         it = 0
         phi0 = p.T.dot(g)
-        data = np.zeros((maxit,3),dtype=float,order='F')
-        X = np.zeros((n,maxit),dtype=float,order='F')
+        data = zeros((maxit,3),dtype=float,order='F')
+        X = zeros((n,maxit),dtype=float,order='F')
 
         while (norm(delta_x,2) > minstep*norm(x,2) and dF > flat and it < maxit and phi0 < 0):
             # Compute some CG quantities.
@@ -93,28 +94,28 @@ def maxent(A,b,lamb,w=None,x0=None):
             # First compute initial parameters for the root finder.
             alpha_left = 0
             phi_left = phi0
-            if np.min(p) >= 0:
+            if p.min() >= 0:
                 alpha_right = -phi0/(2*gamma)
                 h = 1 + alpha_right*p/x
             else:
                 # Step-length control to insure a positive x + alpha*p.
-                I = np.where(p < 0)[0]
-                alpha_right = np.min(-x[I] / p[I])
+                I = where(p < 0)[0]
+                alpha_right = (-x[I] / p[I]).min()
                 h = 1 + alpha_right*p / x
-                delta = np.spacing(1) #replacement for matlab eps
-                while np.min(h) <= 0:
+                delta = spacing(1) #replacement for matlab eps
+                while h.min() <= 0:
                     alpha_right = alpha_right*(1 - delta)
                     h = 1 + alpha_right*p / x
                     delta = delta*2
 
-            z = np.log(h)
+            z = log(h)
             phi_right = phi0 + 2*alpha_right*gamma + l2*p.T.dot(z)
             alpha = alpha_right
             phi = phi_right
 
 
             if phi_right <= 0: # Special treatment of the case when phi(alpha_right) = 0.
-                z = np.log(1 + alpha*p/x)
+                z = log(1 + alpha*p/x)
                 g_new = g + l2*z + 2*alpha*v
                 t = g_new.T.dot(g_new)
                 beta = (t - g.T.dot(g_new))/(phi - phi0)
@@ -128,14 +129,14 @@ def maxent(A,b,lamb,w=None,x0=None):
                     # Use the secant method to improve the root of phi(alpha) = 0
                     # to within an accuracy determined by tau.
                     phiit = 0
-                    while np.abs(phi/phi0) > tau:
+                    while absolute(phi/phi0) > tau:
                         phiold = phi; alphaold = alpha
                         alpha = (alpha_left*phi_right - alpha_right*phi_left) / (phi_right - phi_left)
-                        z = np.log(1 + alpha*p/x)
+                        z = log(1 + alpha*p/x)
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
                         if phiold == phi and alphaold == alpha and phiit>maxit:
                             warn('secant is not converging: abs(phi/phi0) = ' +
-                                 str(np.abs(phi/phi0)) +
+                                 str(absolute(phi/phi0)) +
                                  '  terminating phi search on iteration ' + str(phiit))
                             break
                         if phi > 0:
@@ -165,14 +166,14 @@ def maxent(A,b,lamb,w=None,x0=None):
 
             # Compute some norms and check for flat minimum.
             rho[j] = norm(r)
-            eta[j] = x.T.dot(np.log(w*x))
+            eta[j] = x.T.dot(log(w*x))
             F[it]  = rho[j]**2 + l2*eta[j]
             if it <= flatrange:
                 dF = 1
             else:
-                dF = np.absolute(F[it] - F[it-flatrange])/np.abs(F[it])
+                dF = absolute(F[it] - F[it-flatrange])/absolute(F[it])
 
-            data[it,...] = np.array([F[it],norm(delta_x),norm(g)])
+            data[it,...] = array([F[it],norm(delta_x),norm(g)])
             X[...,it] = x
 
 
@@ -184,9 +185,12 @@ def maxent(A,b,lamb,w=None,x0=None):
     return x_lambda.squeeze(),rho,eta
 
 if __name__ == '__main__':
-    A = np.array([[1, 2, 0],[0, 4, 3]])
-    b = np.array([8,18])
-    print(A)
-    print(b)
+    from numpy.testing import assert_array_almost_equal, assert_almost_equal
+    print('selftest mode')
+    A = array([[1, 2, 0],[0, 4, 3]])
+    b = array([8,18])
     x,rho,eta = maxent(A,b,1)
-    print(x)
+    assert_array_almost_equal(x,[0.552883833066741, 3.621706597812032, 1.109718756265391])
+    assert_almost_equal(rho,0.274512808306942)
+    assert_almost_equal(eta,4.448824493430995)
+    exit(0)
