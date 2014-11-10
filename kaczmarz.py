@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+from __future__ import division
 from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
@@ -86,3 +88,12 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         if iIter % 200 == 0: #print update every N loop iterations for user comfort
             print( ('kaczmarz: Iteration ' + str(iIter) + ',  ||residual|| = ' + str(residualNorm) ) )
     return x,residual,iIter-1
+
+if __name__ == '__main__':
+    from numpy.testing import assert_array_almost_equal
+    print('selftest mode')
+    A = asarray([[1, 2, 0],[0, 4, 3]])
+    b = asarray([8,18])
+    x = kaczmarz_ART(A,b,50)[0]
+    assert_array_almost_equal(x,[ 0.91803279,  3.54098361,  1.27868852])
+    exit(0)
