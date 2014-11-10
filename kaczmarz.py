@@ -3,32 +3,31 @@ from __future__ import division
 from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
+'''
+Michael Hirsch May 2014
+ GPL v3+ license
 
+ tested with Dense and Sparse arrays. (Aug 2014)
+
+ inputs:
+ A:  M x N 2-D projection matrix
+ b:  N x 1 1-D vector of observations
+ maxIter: maximum number of ART iterations
+ x0: N x 1 1-D vector of initialization (a guess at x)
+ lambdaRelax: relaxation parameter (see Herman Ch.11.2)
+ stopmode: {None, MDP}  stop before maxIter if solution is good enough
+             (MDP is Morozov Discrepancy Principle)
+ nonneg: enforces non-negativity of solution
+
+ outputs:
+ x: the estimated solution of A x = b
+ residual: the error b-Ax
+
+ References:
+ Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
+ Natterer, F. "The mathematics of computed tomography", SIAM, 2001
+'''
 def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,nonneg=True,dbglvl=0):
-    # TODO: add randomized ART, and other variants
-    # Michael Hirsch May 2014
-    # GPL v3+ license
-    #
-    # tested with Dense and Sparse arrays. (Aug 2014)
-    #
-    # inputs:
-    # A:  M x N 2-D projection matrix
-    # b:  N x 1 1-D vector of observations
-    # maxIter: maximum number of ART iterations
-    # x0: N x 1 1-D vector of initialization (a guess at x)
-    # lambdaRelax: relaxation parameter (see Herman Ch.11.2)
-    # stopmode: {None, MDP}  stop before maxIter if solution is good enough
-    #             (MDP is Morozov Discrepancy Principle)
-    # nonneg: enforces non-negativity of solution
-    #
-    # outputs:
-    # x: the estimated solution of A x = b
-    # residual: the error b-Ax
-    #
-    # References:
-    # Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
-    # Natterer, F. "The mathematics of computed tomography", SIAM, 2001
-
 #%% user parameters
     residual = None #init
 
@@ -63,7 +62,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
 
     x = x0.copy() # we'll leave the original x0 alone, and make a copy in x
     iIter = 0
-    stop = False #FIXME will always run at least once
+    stop = False # will always run at least once
     while not stop: #for each iteration
         for iRow in goodRows:  #only not all-zero rows
             #denominator AND numerator are scalar!
@@ -74,7 +73,6 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             x += lambdaRelax * ( b[iRow] - A[iRow,:].dot(x) ) / RowNormSq[iRow] *  A[iRow,:] #first two terms are scalar always
 
             if nonneg: x[x<0] = 0
-
 
         iIter += 1
         #handle stop rule
