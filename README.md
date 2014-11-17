@@ -4,6 +4,11 @@
 python-AIRtools
 ===============
 
+Installation:
+```
+pip install https://github.com/scienceopen/python-AIRtools/archive/master.zip
+```
+
 Port of P.C. Hansen's notable AIRtools Matlab suite of inversion / regularization tools
 
 PC Hansen's ReguTools ports are also here.
