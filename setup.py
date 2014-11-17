@@ -1,6 +1,6 @@
 from distutils.core import setup
-import pypkg
+
 setup(name='AIRtools',
-      version=pypkg.__version__,
+      version='1.0.0',
       py_modules=['maxent','kaczmarz','picard','rzr'],
       )
