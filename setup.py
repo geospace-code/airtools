@@ -1,6 +1,5 @@
 from distutils.core import setup
-from Cython.Build import cythonize
-
-setup(
-  ext_modules = cythonize("kaczmarz.pyx"),
-)
+setup(name='AIRtools',
+      version='1.0',
+      py_modules=['maxent,kaczmarz','picard','rzr'],
+      )
