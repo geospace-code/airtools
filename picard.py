@@ -26,12 +26,10 @@ PICARD Visual inspection of the Picard condition.
  ported to Python by Michael Hirsch
 '''
 def picard(U,s,b,d=0):
-    if U.flags['F_CONTIGUOUS'] is False:
-        raise RuntimeError('U must be Fortran-ordered for this function to work! try U = np.asfortranarray(U)')
 
     n,ps = np.atleast_2d(s).T.shape # the transpose is because Numpy 1.8.1 has no order='F' option for atleast2d
 
-    beta = np.abs( U[:,:n].T.dot(b) )
+    beta = np.abs( np.asfortranarray(U[:,:n]).T.dot(b) )
     eta = np.zeros(n,order='F')
 
     if ps==2: s = s[:,0] / s[:,1]
