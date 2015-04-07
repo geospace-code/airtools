@@ -1,6 +1,5 @@
 from __future__ import division
 import numpy as np
-from warnings import warn
 from matplotlib.pyplot import figure,show
 '''
 PICARD Visual inspection of the Picard condition.
@@ -27,7 +26,7 @@ PICARD Visual inspection of the Picard condition.
 '''
 def picard(U,s,b,d=0):
 
-    n,ps = np.atleast_2d(s).T.shape # the transpose is because Numpy 1.8.1 has no order='F' option for atleast2d
+    n,ps = np.atleast_2d(s).T.shape 
 
     beta = np.abs( np.asfortranarray(U[:,:n]).T.dot(b) )
     eta = np.zeros(n,order='F')
@@ -37,8 +36,8 @@ def picard(U,s,b,d=0):
     d21 = 2 * d + 1
     keta = np.arange(d,n-d)
 
-    if np.any(s==0): #10**-14 is OK?
-        warn('picard: Division by zero: singular values')
+    if (s==0).any(): #10**-14 is OK?
+        print('** picard: Division by zero: singular values')
 
     for i in keta:
         es = np.s_[i-d:i+d+1]
