@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import print_function, division
 from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array
 from numpy.linalg import norm
@@ -183,14 +182,3 @@ def maxent(A,b,lamb,w=None,x0=None):
         x_lambda[...,j] = x
 
     return x_lambda.squeeze(),rho,eta
-
-if __name__ == '__main__':
-    from numpy.testing import assert_array_almost_equal, assert_almost_equal
-    print('selftest mode')
-    A = array([[1, 2, 0],[0, 4, 3]])
-    b = array([8,18])
-    x,rho,eta = maxent(A,b,1)
-    assert_array_almost_equal(x,[0.552883833066741, 3.621706597812032, 1.109718756265391])
-    assert_almost_equal(rho,0.274512808306942)
-    assert_almost_equal(eta,4.448824493430995)
-    exit(0)
