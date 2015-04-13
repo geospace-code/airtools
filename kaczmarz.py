@@ -2,6 +2,7 @@ from __future__ import division
 from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
+from warnings import warn
 '''
 Michael Hirsch May 2014
  GPL v3+ license
@@ -31,12 +32,11 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
     residual = None #init
 
     if dbglvl>0:
-        print(('Lambda Relaxation: ' + str(lambdaRelax)))
+        print('Lambda Relaxation: {}'.format(lambdaRelax))
 
     n = A.shape[1] #only need rows
 
     if x0 is None: # we'll use zeros
-        print('kaczmarz: using zeros to initialize x0')
         x0 = zeros(n,order='F') #1-D vector
 
     if stopmode is None or stopmode.lower() =='iter': # just use number of iterations
@@ -46,7 +46,7 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         if taudelta==0: print('you used tauDelta=0, which effectively disables Morozov discrepancy principle')
     else:
         sr = 0
-        print("didn't understand stopmode command, defaulted to maximum iterations")
+        warn("kaczmarz: didn't understand stopmode command, defaulted to maximum iterations")
 
 #%% disregard all-zero columns of A
     if issparse(A):
@@ -83,5 +83,5 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             residualNorm = norm(residual,2)
             stop |= (residualNorm <= taudelta)
         if iIter % 200 == 0: #print update every N loop iterations for user comfort
-            print( ('kaczmarz: Iteration ' + str(iIter) + ',  ||residual|| = ' + str(residualNorm) ) )
+            print('kaczmarz: Iteration {},  ||residual|| = {:0.2f}'.format(iIter,residualNorm) )
     return x,residual,iIter-1

@@ -51,7 +51,8 @@ def maxent(A,b,lamb,w=None,x0=None):
     F = zeros(maxit)
 
     if (lamb.any() <= 0):
-        raise RuntimeError('Regularization parameter lambda must be positive')
+        print('*** maxent: Regularization parameter lambda must be positive')
+        return None, None, None
 
     if w is None:
         w  = ones(n,dtype=float) #needs to be column vector

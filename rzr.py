@@ -1,5 +1,4 @@
 from numpy import where,atleast_1d
-#import pdb
 
 def rzr(A,b=None,Nthr=0):
     '''
@@ -25,13 +24,14 @@ def rzr(A,b=None,Nthr=0):
     '''
 
     s = (A>0).sum(axis=1) #number of non-zero elements per row
-    goodInd = where(s>Nthr)[0]
+    goodInd = s > Nthr
+    ngood = goodInd.sum()
     A = A[goodInd,:]
 
     if goodInd.size < A.shape[0]:
-        print('rzr: removed ' + str(A.shape[0]- goodInd.size) + ' zero rows from matrix and observation')
-        print(goodInd.size + ' rows remaining')
-    if atleast_1d(b).size !=1:
+        print('rzr: removed {} zero rows from matrix and observation.'.format((A.shape[0]- ngood)))
+        print('{} rows remaining'.format(ngood))
+    if b is not None:
         b = b[goodInd]
 
     return A,b,goodInd

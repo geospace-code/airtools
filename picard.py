@@ -41,8 +41,12 @@ def picard(U,s,b,d=0):
 
     for i in keta:
         es = np.s_[i-d:i+d+1]
-        eta[i] = ( np.prod(beta[es])**(1/d21)) / s[i]
+        eta[i] = ( beta[es].prod()**(1/d21)) / s[i]
 #%% plot Picard plot
+    plotpicard(n,s,beta,eta,keta,ps)
+    return eta
+    
+def plotpicard(n,s,beta,eta,keta,ps):
     ni = np.arange(n)
     ax = figure().gca()
     ax.semilogy(ni, s, '.-') #breaks for inf
@@ -55,6 +59,4 @@ def picard(U,s,b,d=0):
         ax.legend( ('$\sigma_i$','$|u_i^T b|$','$|u_i^T b|/\sigma_i$'),loc='lower left' )
     else:
         ax.legend( ('$\sigma_i/\mu_i$','$|u_i^T b|$','$|u_i^T b|/ (\sigma_i/\mu_i)$') ,loc='lower left')
-    show()
 
-    return eta

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """selftest"""
+from numpy.linalg import svd
 from numpy import array
 from numpy.testing import assert_array_almost_equal, assert_almost_equal
 #%% kaczmarz
@@ -16,3 +17,20 @@ x,rho,eta = maxent(A,b,1)
 assert_array_almost_equal(x,[0.552883833066741, 3.621706597812032, 1.109718756265391])
 assert_almost_equal(rho,0.274512808306942)
 assert_almost_equal(eta,4.448824493430995)
+#%% rzr
+from rzr import rzr
+A = array([[1,2,3],
+           [0,0,0],
+           [4,5,6]])
+b = array([1,2,3])
+Ar,br,g = rzr(A,b)
+assert_array_almost_equal(Ar,array([[1,2,3],
+                                    [4,5,6]]))
+assert_array_almost_equal(br,array([1,3]))   
+#%% picard
+from picard import picard
+U,s,V = svd(array([[3,2,2],
+                   [2,3,-2],
+                   [2,3,4]]))
+eta = picard(U,s,V)
+assert_array_almost_equal(eta,[ 0.02132175, 0.00238076, 0.04433971])
