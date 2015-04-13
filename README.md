@@ -1,5 +1,6 @@
 [![Health](https://landscape.io/github/scienceopen/python-AIRtools/master/landscape.png)](https://landscape.io/github/scienceopen/python-AIRtools/master)
 [![Build Status](https://travis-ci.org/scienceopen/python-AIRtools.svg)](https://travis-ci.org/scienceopen/python-AIRtools)
+[![Coverage Status](https://coveralls.io/repos/scienceopen/python-AIRtools/badge.svg)](https://coveralls.io/r/scienceopen/python-AIRtools)
 
 python-AIRtools
 ===============
