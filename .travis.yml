@@ -26,8 +26,8 @@ script:
     else
         python test.py;
     fi
-
- after_success:
+    
+after_success:
   - if [[ -z $pyv ]]; then
      coveralls;
     fi
