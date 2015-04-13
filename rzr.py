@@ -28,9 +28,6 @@ def rzr(A,b=None,Nthr=0):
     ngood = goodInd.sum()
     A = A[goodInd,:]
 
-    if goodInd.size < A.shape[0]:
-        print('rzr: removed {} zero rows from matrix and observation.'.format((A.shape[0]- ngood)))
-        print('{} rows remaining'.format(ngood))
     if b is not None:
         b = b[goodInd]
 
