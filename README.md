@@ -1,3 +1,4 @@
+[![Code Climate](https://codeclimate.com/github/scienceopen/pyAIRtools/badges/gpa.svg)](https://codeclimate.com/github/scienceopen/pyAIRtools)
 [![Health](https://landscape.io/github/scienceopen/python-AIRtools/master/landscape.png)](https://landscape.io/github/scienceopen/python-AIRtools/master)
 [![Build Status](https://travis-ci.org/scienceopen/python-AIRtools.svg)](https://travis-ci.org/scienceopen/python-AIRtools)
 [![Coverage Status](https://coveralls.io/repos/scienceopen/python-AIRtools/badge.svg?branch=master)](https://coveralls.io/r/scienceopen/python-AIRtools?branch=master)
