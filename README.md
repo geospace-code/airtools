@@ -5,13 +5,10 @@
 python-AIRtools
 ===============
 
-Prereqs:
---------
+Installation
+------------
 ```
-conda install --file requirements.txt
-```
-or
-```
+git clone --depth 1 https://github.com/sciencopen/pyAIRtools
 pip install -r requirements.txt
 ```
 
