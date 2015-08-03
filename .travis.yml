@@ -30,7 +30,7 @@ script:
         echo "running coverage";
         coverage run test/test.py;
     else
-        python test/test.py;
+        nosetests -v test/test.py;
     fi
     
 after_success:
