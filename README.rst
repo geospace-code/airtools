@@ -24,12 +24,9 @@ from Terminal::
     python setup.py develop
 
 
-Functions
----------
-
-=========       ===========
+============    ===========
 Function        Description
-=========       ===========
+============    ===========
 picard.py       The resulting graph does not exactly match Matlab results. With Numpy 1.8.1 the output of numpy.linalg.svd and scipy.linalg.svd do NOT exactly match Matlab.
 
 kaczmarz.py     Kaczmarz ART 
@@ -37,5 +34,5 @@ kaczmarz.py     Kaczmarz ART
 maxent.py       Maximum Entropy Regularization
 
 rzr.py          remove unused or little used rows from tomographic projection matrix.
-=========       ===========
+============    ===========
 
