@@ -1,6 +1,6 @@
 from __future__ import division
 import numpy as np
-from matplotlib.pyplot import figure,show
+
 '''
 PICARD Visual inspection of the Picard condition.
 
@@ -47,6 +47,7 @@ def picard(U,s,b,d=0):
     return eta
     
 def plotpicard(n,s,beta,eta,keta,ps):
+    from matplotlib.pyplot import figure,show
     ni = np.arange(n)
     ax = figure().gca()
     ax.semilogy(ni, s, '.-') #breaks for inf
