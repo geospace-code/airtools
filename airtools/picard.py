@@ -1,4 +1,5 @@
-from __future__ import division
+from __future__ import division,absolute_import
+import logging
 import numpy as np
 from matplotlib.pyplot import figure
 '''
@@ -37,14 +38,13 @@ def picard(U,s,b,d=0):
     keta = np.arange(d,n-d)
 
     if (s==0).any(): #10**-14 is OK?
-        print('** picard: Division by zero: singular values')
+        logging.warning('** picard: Division by zero: singular values')
 
     for i in keta:
         es = np.s_[i-d:i+d+1]
         eta[i] = ( beta[es].prod()**(1/d21)) / s[i]
-#%% plot Picard plot
-    plotpicard(n,s,beta,eta,keta,ps)
-    return eta
+
+    return eta,n,s,beta,keta,ps
     
 def plotpicard(n,s,beta,eta,keta,ps):
     ni = np.arange(n)

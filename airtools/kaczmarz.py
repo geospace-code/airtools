@@ -1,8 +1,8 @@
-from __future__ import division
+from __future__ import division,absolute_import
+import logging
 from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
-from warnings import warn
 '''
 Michael Hirsch May 2014
  GPL v3+ license
@@ -27,12 +27,11 @@ Michael Hirsch May 2014
  Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
  Natterer, F. "The mathematics of computed tomography", SIAM, 2001
 '''
-def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,nonneg=True,dbglvl=0):
+def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,nonneg=True):
 #%% user parameters
     residual = None #init
 
-    if dbglvl>0:
-        print('Lambda Relaxation: {}'.format(lambdaRelax))
+    logging.info('Lambda Relaxation: {}'.format(lambdaRelax))
 
     n = A.shape[1] #only need rows
 
@@ -43,10 +42,11 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
         sr = 0
     elif stopmode.lower() == 'mdp' or stopmode.lower()== 'dp':
         sr = 1
-        if taudelta==0: print('you used tauDelta=0, which effectively disables Morozov discrepancy principle')
+        if taudelta==0: 
+            logging.warning('you used tauDelta=0, which effectively disables Morozov discrepancy principle')
     else:
         sr = 0
-        warn("kaczmarz: didn't understand stopmode command, defaulted to maximum iterations")
+        logging.error("didn't understand stopmode command, defaulted to maximum iterations")
 
 #%% disregard all-zero columns of A
     if issparse(A):
@@ -83,5 +83,5 @@ def kaczmarz_ART(A,b,maxIter=8,x0=None,lambdaRelax=1,stopmode=None,taudelta=0,no
             residualNorm = norm(residual,2)
             stop |= (residualNorm <= taudelta)
         if iIter % 200 == 0: #print update every N loop iterations for user comfort
-            print('kaczmarz: Iteration {},  ||residual|| = {:0.2f}'.format(iIter,residualNorm) )
+            print('Iteration {},  ||residual|| = {:.2f}'.format(iIter,residualNorm) )
     return x,residual,iIter-1

@@ -1,3 +1,4 @@
+from __future__ import division,absolute_import
 from numpy import where,atleast_1d
 
 def rzr(A,b=None,Nthr=0):

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """selftest"""
 from numpy.linalg import svd
 from numpy import array
@@ -36,7 +36,7 @@ def test_picard():
     U,s,V = svd(array([[3,2,2],
                        [2,3,-2],
                        [2,3,4]]))
-    eta = picard(U,s,V)
+    eta = picard(U,s,V)[0]
     assert_array_almost_equal(eta,[ 0.02132175, 0.00238076, 0.04433971])
     
 if __name__ == '__main__':

@@ -9,7 +9,6 @@ setup(name='pyAIRtools',
 	  long_description=long_description,
 	  author='Michael Hirsch',
 	  url='https://github.com/scienceopen/pyAIRtools',
-	  install_requires=['numpy','scipy'],
       packages=['airtools'],
 	  )
 
