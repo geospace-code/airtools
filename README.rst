@@ -14,25 +14,27 @@ Port of P.C. Hansen's notable AIRtools Matlab suite of inversion / regularizatio
 
 PC Hansen's ReguTools ports are also here.
 
+Also includes linear constrained least squares solver using cvxopt in ``lsqlin.py``
+
 
 Installation
 ------------
-from Terminal::
+::
 
-    git clone --depth 1 https://github.com/sciencopen/pyAIRtools
-    conda install --file requirements.txt
     python setup.py develop
 
 
 ============    ===========
 Function        Description
 ============    ===========
-picard.py       The resulting graph does not exactly match Matlab results. With Numpy 1.8.1 the output of numpy.linalg.svd and scipy.linalg.svd do NOT exactly match Matlab.
+picard.py       
 
 kaczmarz.py     Kaczmarz ART 
 
 maxent.py       Maximum Entropy Regularization
 
 rzr.py          remove unused or little used rows from tomographic projection matrix.
+
+lsqlin.py       linear constrained least squares solver
 ============    ===========
 
