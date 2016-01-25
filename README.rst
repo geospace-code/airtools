@@ -1,5 +1,5 @@
-.. image:: https://travis-ci.org/scienceopen/pyAIRtools.svg?branch=master
-    :target: https://travis-ci.org/scienceopen/pyAIRtools
+.. image:: https://travis-ci.org/scienceopen/airtools.svg?branch=master
+    :target: https://travis-ci.org/scienceopen/airtools
 .. image:: https://coveralls.io/repos/scienceopen/pyAIRtools/badge.svg?branch=master&service=github 
     :target: https://coveralls.io/github/scienceopen/pyAIRtools?branch=master 
 .. image:: https://codeclimate.com/github/scienceopen/pyAIRtools/badges/gpa.svg
