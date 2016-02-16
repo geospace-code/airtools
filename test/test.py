@@ -4,7 +4,7 @@ from numpy.linalg import svd
 from numpy import array,mat,squeeze
 from cvxopt import matrix
 from scipy import sparse
-from numpy.testing import assert_array_almost_equal, assert_almost_equal, assert_allclose
+from numpy.testing import assert_array_almost_equal, assert_almost_equal, assert_allclose,run_module_suite
 #
 import airtools.lsqlin as lsqlin
 
@@ -93,8 +93,4 @@ def test_lsqlin():
     assert_allclose(squeeze(ret['x']),[2.5e-7,6.93e-1],rtol=1e-2)
 
 if __name__ == '__main__':
-    test_kaczmarz()
-    test_maxent()
-    test_rzr()
-    test_picard()
-    test_lsqlin()
+    run_module_suite()
