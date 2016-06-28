@@ -26,7 +26,7 @@ Michael Hirsch May 2014
  Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
  Natterer, F. "The mathematics of computed tomography", SIAM, 2001
 '''
-def kaczmarz_ART(A,b,maxIter=8,x0=None,lamb=1,stopmode=None,taudelta=0,nonneg=True):
+def kaczmarz(A,b,maxIter=8,x0=None,lamb=1,stopmode=None,taudelta=0,nonneg=True):
     assert 0. <= lamb <= 2.,'unstable relaxation parameter'
 #%% user parameters
     residual = None #init

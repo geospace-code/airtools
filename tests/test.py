@@ -7,7 +7,12 @@ from scipy import sparse
 from numpy.testing import assert_array_almost_equal, assert_allclose,run_module_suite
 #
 import airtools.lsqlin as lsqlin
+"""
+generate test problems from Julia by
 
+using MatrixDepot
+matrixdepot("deriv2",3,false)
+"""
 A = array([[-0.0277778, -0.0277778, -0.00925926],
            [-0.0277778, -0.0648148, -0.0277778],
            [-0.00925926,-0.0277778, -0.0277778 ]])
@@ -19,17 +24,15 @@ x_true = array([0.09622504486493762,
                 0.48112522432468807])
 
 def test_kaczmarz():
-    from airtools.kaczmarz import kaczmarz_ART
-    x = kaczmarz_ART(A,b,200,lamb=1.)[0]
+    from airtools.kaczmarz import kaczmarz
+    x = kaczmarz(A,b,200,lamb=1.)[0]
     assert_array_almost_equal(x,x_true)
 
 def test_maxent():
     from airtools.maxent import maxent
 
-    x,rho,eta = maxent(A,b,lamb=.000025)
+    x = maxent(A,b,lamb=.000025)[0]
     assert_array_almost_equal(x,x_true)
-#    assert_almost_equal(rho,0.274512808306942)
-#    assert_almost_equal(eta,4.448824493430995)
 
 def test_rzr():
     from airtools.rzr import rzr
