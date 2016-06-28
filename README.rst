@@ -42,3 +42,12 @@ rzr.py          remove unused or little used rows from tomographic projection ma
 lsqlin.py       linear constrained least squares solver
 ============    ===========
 
+
+Tests
+-----
+You can run a comparison of the Python code with the Matlab code in the ``matlab/`` directory by::
+
+    ./tests/test_octave.py
+    
+which runs the Matlab version via `Oct2Py <https://blink1073.github.io/oct2py/>`_.
+
