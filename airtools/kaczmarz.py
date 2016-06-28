@@ -1,11 +1,10 @@
-from __future__ import division,absolute_import
+from __future__ import division
 import logging
 from numpy import zeros, where,unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
 '''
 Michael Hirsch May 2014
- GPL v3+ license
 
  tested with Dense and Sparse arrays. (Aug 2014)
 

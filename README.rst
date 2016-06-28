@@ -22,16 +22,20 @@ Installation
 ::
 
     python setup.py develop
+    
+Examples
+------------
+See ``tests/test.py``. You can literally just paste the code from each test into your console for the function you're interested in. Would you like to submit a pull request for an inversion example making a cool plot? Please do, it should be straighforward!
 
 
 ============    ===========
 Function        Description
 ============    ===========
-picard.py       
+picard.py       Picard Plot
 
 kaczmarz.py     Kaczmarz ART 
 
-maxent.py       Maximum Entropy Regularization
+maxent.py       Maximum Entropy Regularization (from ReguTools)
 
 rzr.py          remove unused or little used rows from tomographic projection matrix.
 

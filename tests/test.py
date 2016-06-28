@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """selftest"""
 from numpy.linalg import svd
 from numpy import array,mat,squeeze

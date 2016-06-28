@@ -1,4 +1,4 @@
-from __future__ import print_function, division
+from __future__ import division
 from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array
 from numpy.linalg import norm
 from warnings import warn
@@ -51,8 +51,8 @@ def maxent(A,b,lamb,w=None,x0=None):
     F = zeros(maxit)
 
     if (lamb.any() <= 0):
-        print('*** maxent: Regularization parameter lambda must be positive')
-        return None, None, None
+        warn('Regularization parameter lambda must be positive')
+        return (None,)*3
 
     if w is None:
         w  = ones(n,dtype=float) #needs to be column vector
@@ -169,7 +169,7 @@ def maxent(A,b,lamb,w=None,x0=None):
             eta[j] = x.T.dot(log(w*x))
             F[it]  = rho[j]**2 + l2*eta[j]
             if it <= flatrange:
-                dF = 1
+                dF = 1.
             else:
                 dF = absolute(F[it] - F[it-flatrange])/absolute(F[it])
 

@@ -1,4 +1,4 @@
-from __future__ import division,absolute_import
+from __future__ import division
 import logging
 import numpy as np
 from matplotlib.pyplot import figure
@@ -27,7 +27,7 @@ PICARD Visual inspection of the Picard condition.
 '''
 def picard(U,s,b,d=0):
 
-    n,ps = np.atleast_2d(s).T.shape 
+    n,ps = np.atleast_2d(s).T.shape
 
     beta = np.abs( np.asfortranarray(U[:,:n]).T.dot(b) )
     eta = np.zeros(n,order='F')
@@ -45,7 +45,7 @@ def picard(U,s,b,d=0):
         eta[i] = ( beta[es].prod()**(1/d21)) / s[i]
 
     return eta,n,s,beta,keta,ps
-    
+
 def plotpicard(n,s,beta,eta,keta,ps):
     ni = np.arange(n)
     ax = figure().gca()
