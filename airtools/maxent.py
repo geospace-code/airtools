@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array
+from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array,ndarray
 from numpy.linalg import norm
 from warnings import warn
 
@@ -30,6 +30,17 @@ MAXENT Maximum entropy regularization.
 '''
 
 def maxent(A,b,lamb,w=None,x0=None):
+    assert isinstance(A,ndarray) and A.ndim==2,'A is expected to be a 2-D Numpy array'
+    
+    assert isinstance(b,ndarray), 'b is expected to be a 1-D Numpy array'
+    b=b.squeeze()
+    assert b.ndim<=1,'b is expected to be a 1-D Numpy array'
+    
+    lamb = atleast_1d(lamb)
+    assert lamb.ndim==1 and lamb.size>=0,'lamb must be a 1-D vector or scalar'
+    assert (lamb >= 0).all(),'Regularization parameter lamb must be positive'
+
+
 #%% Set defaults.
     flat = 1e-3     # Measures a flat minimum.
     flatrange = 10  # How many iterations before a minimum is considered flat.
@@ -37,9 +48,6 @@ def maxent(A,b,lamb,w=None,x0=None):
     minstep = 1e-12 # Determines the accuracy of x_lambda.
     sigma = 0.5     # Threshold used in descent test.
     tau0 = 1e-3    # Initial threshold used in secant root finder.
-
-#%% shape variables appropriately
-    b = b.squeeze()
 
 #%% Initialization.
     m,n = A.shape
@@ -49,10 +57,6 @@ def maxent(A,b,lamb,w=None,x0=None):
 
     x_lambda = zeros((n,Nlambda),order='F')
     F = zeros(maxit)
-
-    if (lamb.any() <= 0):
-        warn('Regularization parameter lambda must be positive')
-        return (None,)*3
 
     if w is None:
         w  = ones(n,dtype=float) #needs to be column vector
@@ -67,10 +71,10 @@ def maxent(A,b,lamb,w=None,x0=None):
     for j in range(Nlambda):
 
         # Prepare for nonlinear CG iteration.
-        l2 = lamb[j]**2
+        l2 = lamb[j]**2.
         x  = x0
         Ax = A.dot(x)
-        g  = 2*A.T.dot(Ax - b) + l2*(1 + log(w*x))
+        g  = 2.*A.T.dot(Ax - b) + l2*(1 + log(w*x))
         p  = -g
         r  = Ax - b
 
@@ -96,12 +100,12 @@ def maxent(A,b,lamb,w=None,x0=None):
             phi_left = phi0
             if p.min() >= 0:
                 alpha_right = -phi0/(2*gamma)
-                h = 1 + alpha_right*p/x
+                h = 1. + alpha_right*p/x
             else:
                 # Step-length control to insure a positive x + alpha*p.
                 I = where(p < 0)[0]
                 alpha_right = (-x[I] / p[I]).min()
-                h = 1 + alpha_right*p / x
+                h = 1. + alpha_right*p / x
                 delta = spacing(1) #replacement for matlab eps
                 while h.min() <= 0:
                     alpha_right = alpha_right*(1 - delta)
