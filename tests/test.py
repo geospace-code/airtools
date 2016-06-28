@@ -4,25 +4,32 @@ from numpy.linalg import svd
 from numpy import array,mat,squeeze
 from cvxopt import matrix
 from scipy import sparse
-from numpy.testing import assert_array_almost_equal, assert_almost_equal, assert_allclose,run_module_suite
+from numpy.testing import assert_array_almost_equal, assert_allclose,run_module_suite
 #
 import airtools.lsqlin as lsqlin
 
+A = array([[-0.0277778, -0.0277778, -0.00925926],
+           [-0.0277778, -0.0648148, -0.0277778],
+           [-0.00925926,-0.0277778, -0.0277778 ]])
+b = array([-0.01514653483985129,
+            -0.03474793286789414,
+            -0.022274315940957783])
+x_true = array([0.09622504486493762,
+                0.28867513459481287,
+                0.48112522432468807])
+
 def test_kaczmarz():
     from airtools.kaczmarz import kaczmarz_ART
-    A = array([[1, 2, 0],[0, 4, 3]])
-    b = array([8,18])
-    x = kaczmarz_ART(A,b,50)[0]
-    assert_array_almost_equal(x,[ 0.91803279,  3.54098361,  1.27868852])
+    x = kaczmarz_ART(A,b,200,lamb=1.)[0]
+    assert_array_almost_equal(x,x_true)
 
 def test_maxent():
     from airtools.maxent import maxent
-    A = [[1, 2, 0],[0, 4, 3]]
-    b = [8,18]
-    x,rho,eta = maxent(A,b,1)
-    assert_array_almost_equal(x,[0.552883833066741, 3.621706597812032, 1.109718756265391])
-    assert_almost_equal(rho,0.274512808306942)
-    assert_almost_equal(eta,4.448824493430995)
+
+    x,rho,eta = maxent(A,b,lamb=.000025)
+    assert_array_almost_equal(x,x_true)
+#    assert_almost_equal(rho,0.274512808306942)
+#    assert_almost_equal(eta,4.448824493430995)
 
 def test_rzr():
     from airtools.rzr import rzr
@@ -93,4 +100,6 @@ def test_lsqlin():
     assert_allclose(squeeze(ret['x']),[2.5e-7,6.93e-1],rtol=1e-2)
 
 if __name__ == '__main__':
+   # test_kaczmarz()
+    #test_maxent()
     run_module_suite()
