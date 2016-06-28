@@ -1,9 +1,9 @@
 .. image:: https://travis-ci.org/scienceopen/airtools.svg?branch=master
     :target: https://travis-ci.org/scienceopen/airtools
-.. image:: https://coveralls.io/repos/scienceopen/pyAIRtools/badge.svg?branch=master&service=github 
-    :target: https://coveralls.io/github/scienceopen/pyAIRtools?branch=master 
-.. image:: https://codeclimate.com/github/scienceopen/pyAIRtools/badges/gpa.svg
-   :target: https://codeclimate.com/github/scienceopen/pyAIRtools
+.. image:: https://coveralls.io/repos/scienceopen/airtools/badge.svg?branch=master&service=github 
+    :target: https://coveralls.io/github/scienceopen/airtools?branch=master 
+.. image:: https://codeclimate.com/github/scienceopen/airtools/badges/gpa.svg
+   :target: https://codeclimate.com/github/scienceopen/airtools
    :alt: Code Climate
 
 ===============
