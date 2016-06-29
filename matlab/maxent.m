@@ -40,7 +40,7 @@ if (nargin ==3), w  = ones(n,1); end
 if (nargin < 5), x0 = ones(n,1); end
 
 % Treat each lambda separately.
-for j=1:length(lambda);
+for j=1:length(lambda)
 
   % Prepare for nonlinear CG iteration.
   l2 = lambda(j)^2;
