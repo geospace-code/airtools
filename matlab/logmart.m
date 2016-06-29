@@ -20,6 +20,8 @@ function [ x,y_est,chi2,i ] = logmart( y,A,relax,x0,sigma,max_iter )
 % x=[1;2;3];
 % y=A*x;
 assert(iscolumn(y),'y must be a column vector')
+assert(ismatrix(A),'A must be a matrix')
+assert(size(A,1)==size(y,1),'A and y row numbers must match')
 %% set defaults
 if (nargin<6), max_iter=200.; end
 if (nargin<5), sigma=ones(size(y)); end

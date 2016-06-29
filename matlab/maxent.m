@@ -51,7 +51,7 @@ for j=1:length(lambda)
 
   % Start the nonlinear CG iteration here.
   delta_x = x; dF = 1; it = 0; phi0 = p'*g;
-  while (norm(delta_x) > minstep*norm(x) & dF > flat & it < maxit & phi0 < 0)
+  while (norm(delta_x) > minstep*norm(x) && dF > flat && it < maxit && phi0 < 0)
     it = it + 1;
 
     % Compute some CG quantities.

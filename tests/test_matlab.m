@@ -39,6 +39,7 @@ plott(t_shaw,methods)
 end
 
 function t = runtest(A,b,x_true,pn)
+t=[]
 %% is it a well-posed, well-conditioned problem?
 [U,s] = csvd(A);
 figure,subplot(1,2,1)
@@ -47,17 +48,17 @@ picard(U,s,b); title([pn,' Picard plot  Cond. #: ',num2str(cond(A))])
 x_inv = A\b;
 assert_gentle(x_inv,x_true,'inv')
 f = @() A\b;
-t(1) = timeit(f);
+t(1) = tictoc(f);
 %% pseudoinv
 x_pinv = pinv(A)*b;
 assert_gentle(x_pinv,x_true,'inv')
 f = @() pinv(A)*b;
-t(2) = timeit(f);
+t(2) = tictoc(f);
 %% Log mART
 x_logmart = logmart(b,A);
 assert_gentle(x_logmart,x_true,'logmart')
 f = @() logmart(b,A);
-t(3) = timeit(f);
+t(3) = tictoc(f);
 %% Maximum Entropy
 %x_python = py.airtools.maxent.maxent(A,b,0.00002)
 %py.numpy.testing.assert_array_almost_equal(x_python,x_true)
@@ -65,7 +66,7 @@ t(3) = timeit(f);
 x_maxent = maxent(A,b,0.001);  
 assert_gentle(x_maxent,x_true,'maxent')
 f = @() maxent(A,b,0.001);
-t(4) = timeit(f);
+t(4) = tictoc(f);
 %% Kaczmarz ART
 %x_python = py.airtools.kaczmarz.kaczmarz(A,b,200)[0]
 %py.numpy.testing.assert_array_almost_equal(x_python,x_true)
@@ -73,7 +74,17 @@ t(4) = timeit(f);
 x_kaczmarz = kaczmarz(A,b,250);
 assert_gentle(x_kaczmarz,x_true,'maxent')
 f = @() kaczmarz(A,b,250);
-t(5) = timeit(f);
+t(5) = tictoc(f);
+end
+
+function t= tictoc(f)
+
+if isoctave
+  tic, f(); t=toc;
+else
+  t = timeit(f); 
+end
+
 end
 
 function plott(t,meth)
