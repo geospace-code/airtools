@@ -2,9 +2,9 @@
 """selftest"""
 from numpy.linalg import svd
 from numpy import array,mat,squeeze
-from cvxopt import matrix
 from scipy import sparse
 from numpy.testing import assert_array_almost_equal, assert_allclose,run_module_suite
+from cvxopt import matrix
 #
 import airtools.lsqlin as lsqlin
 """
@@ -103,6 +103,6 @@ def test_lsqlin():
     assert_allclose(squeeze(ret['x']),[2.5e-7,6.93e-1],rtol=1e-2)
 
 if __name__ == '__main__':
-   # test_kaczmarz()
+#    test_kaczmarz()
     #test_maxent()
     run_module_suite()

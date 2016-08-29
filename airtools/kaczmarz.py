@@ -49,13 +49,14 @@ def kaczmarz(A,b,maxIter=8,x0=None,lamb=1,stopmode=None,taudelta=0,nonneg=True):
 #%% disregard all-zero columns of A
     if issparse(A):
         A = A.tocsr() #save time if it was csc sparse
-        goodRows = unique(A.nonzero()[0])
         # speedup: compute norms along columns at once, and retrieve
         RowNormSq = asarray(A.multiply(A).sum(axis=1)).squeeze() # 50 times faster than dense for 1024 x 100000 A
     else: #is dense A
-        goodRows = where( (A!=0).any(axis=1) )[0] #we want indices of non-allzero rows
         # speedup: compute norms along columns at once, and retrieve
         RowNormSq = norm(A,ord=2,axis=1)**2 #timeit same for norm() and A**2.sum(axis=1)
+
+
+    goodRows = unique(A.nonzero()[0])
 
     x = x0.copy() # we'll leave the original x0 alone, and make a copy in x
     iIter = 0
