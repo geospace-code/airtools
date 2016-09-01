@@ -2,9 +2,6 @@
     :target: https://travis-ci.org/scienceopen/airtools
 .. image:: https://coveralls.io/repos/scienceopen/airtools/badge.svg?branch=master&service=github 
     :target: https://coveralls.io/github/scienceopen/airtools?branch=master 
-.. image:: https://codeclimate.com/github/scienceopen/airtools/badges/gpa.svg
-   :target: https://codeclimate.com/github/scienceopen/airtools
-   :alt: Code Climate
 
 ===============
 python-AIRtools
