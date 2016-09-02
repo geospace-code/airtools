@@ -4,7 +4,7 @@ Tests Python code vs. Matlab by original luminiferous authors
 ...using Octave, of course
 """
 from numpy import array
-from numpy.testing import run_module_suite, assert_array_almost_equal,assert_almost_equal
+from numpy.testing import run_module_suite, assert_array_almost_equal
 from oct2py import Oct2Py
 """
 generate test problems from Julia by
@@ -26,25 +26,27 @@ oc = Oct2Py(timeout=10,convert_to_float=True,oned_as='column')
 oc.addpath('../matlab')
 
 def test_maxent():
-#%% first with Python   
+#%% first with Python
     from airtools.maxent import maxent
-               
+    from airtools.logmart import logmart
+
     x_python,rho,eta = maxent(A,b,0.00002)
     assert_array_almost_equal(x_python,x_true)
 
+    x_pylog = logmart(A,b,0.00002,0.)[0]
+
 #%% then with Octave using original Matlab code
-    
-    x_matlab =oc.maxent(A,b,0.00002).squeeze()   
+    x_matlab = oc.maxent(A,b,0.00002).squeeze()
     assert_array_almost_equal(x_matlab,x_true)
 
 def test_kaczmarz():
     from airtools.kaczmarz import kaczmarz
- 
+
     x_python = kaczmarz(A,b,200)[0]
     assert_array_almost_equal(x_python,x_true)
-    
+
     x_matlab = oc.kaczmarz(A,b,200).squeeze()
     assert_array_almost_equal(x_matlab,x_true)
-    
+
 if __name__ == '__main__':
     run_module_suite()

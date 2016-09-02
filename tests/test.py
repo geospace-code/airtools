@@ -4,9 +4,6 @@ from numpy.linalg import svd
 from numpy import array,mat,squeeze
 from scipy import sparse
 from numpy.testing import assert_array_almost_equal, assert_allclose,run_module_suite
-from cvxopt import matrix
-#
-import airtools.lsqlin as lsqlin
 """
 generate test problems from Julia by
 
@@ -54,6 +51,8 @@ def test_picard():
     assert_array_almost_equal(eta,[ 0.02132175, 0.00238076, 0.04433971])
 
 def test_lsqlin():
+    from cvxopt import matrix
+    import airtools.lsqlin as lsqlin
     # simple Testing routines
     C = array(mat('''0.9501,0.7620,0.6153,0.4057;
     0.2311,0.4564,0.7919,0.9354;
