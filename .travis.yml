@@ -6,6 +6,11 @@ notifications:
 git:
     depth: 3
 
+addons:
+  apt:
+    packages:
+      - gfortran
+
 matrix:
   include:
 #    - os: osx
@@ -30,7 +35,7 @@ install:
     - conda create -n test python=$pyv
     - source activate test
     - pip -q install coveralls
-    - python setup.py develop
+    - pip install .
 
 script: coverage run tests/test.py -v
 
