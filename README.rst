@@ -1,7 +1,7 @@
-.. image:: https://travis-ci.org/scienceopen/airtools.svg?branch=master
-    :target: https://travis-ci.org/scienceopen/airtools
-.. image:: https://coveralls.io/repos/scienceopen/airtools/badge.svg?branch=master&service=github 
-    :target: https://coveralls.io/github/scienceopen/airtools?branch=master 
+.. image:: https://travis-ci.org/scivision/airtools.svg?branch=master
+    :target: https://travis-ci.org/scivision/airtools
+.. image:: https://coveralls.io/repos/scivision/airtools/badge.svg?branch=master&service=github 
+    :target: https://coveralls.io/github/scivision/airtools?branch=master 
 
 ===============
 python-AIRtools
