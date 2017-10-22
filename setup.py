@@ -15,8 +15,9 @@ from setuptools import setup
 setup(name='pyAIRtools',
       packages=['airtools'],
 	  description='Python port of Matlab AIRtools and ReguTools regularization toolbox',
-	  url='https://github.com/scivision/pyAIRtools',
+	  url='https://github.com/scivision/airtools',
 	  author='Michael Hirsch, Ph.D.',
 	  version = '1.0.0',
+      install_requires=req,
 	  )
 
