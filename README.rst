@@ -1,7 +1,12 @@
 .. image:: https://travis-ci.org/scivision/airtools.svg?branch=master
     :target: https://travis-ci.org/scivision/airtools
+
 .. image:: https://coveralls.io/repos/scivision/airtools/badge.svg?branch=master&service=github 
     :target: https://coveralls.io/github/scivision/airtools?branch=master 
+
+.. image:: https://api.codeclimate.com/v1/badges/07d00b91f79c958c073a/maintainability
+   :target: https://codeclimate.com/github/scivision/airtools/maintainability
+   :alt: Maintainability
 
 ===============
 python-AIRtools
@@ -14,16 +19,17 @@ Also includes linear constrained least squares solver using cvxopt in ``lsqlin.p
 
 .. contents::
 
-Installation
-------------
+Install
+-------
 ::
 
-    python setup.py develop
+    pip install -e .
     
 Examples
-------------
-See ``tests/test.py``. You can literally just paste the code from each test into your console for the function you're interested in. Would you like to submit a pull request for an inversion example making a cool plot? Please do, it should be straighforward!
-
+--------
+See ``tests/test.py``. 
+Just paste the code from each test into your console for the function you're interested in. 
+Would you like to submit a pull request for an inversion example making a cool plot? 
 
 ================    ===========
 Function            Description
