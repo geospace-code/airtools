@@ -1,6 +1,6 @@
 from __future__ import division
 import logging
-from numpy import zeros, where,unique,asarray
+from numpy import zeros, unique,asarray
 from numpy.linalg import norm
 from scipy.sparse import issparse
 '''

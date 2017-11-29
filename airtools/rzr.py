@@ -1,12 +1,12 @@
-from __future__ import division
-from numpy import where,atleast_1d
 
-def rzr(A,b=None,Nthr=0):
+def rzr(A, b=None, Nthr=0):
     '''
     rzr  Remove zero rows of A and the corresponding elements of b.
 
-     [A,b] = rzr(A,b)
-     [A,b] = rzr(A,b,Nthr)
+    Assumes A,b are Numpy arrays
+
+     A,b = rzr(A,b)
+     A,b = rzr(A,b,Nthr)
 
      Identifies zero rows of the coefficient matrix A and removes them.
      If a right-hand side b is present, the corresponding elements of

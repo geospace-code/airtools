@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-req = ['nose','numpy','scipy',]
-
+install_requires = ['numpy','scipy',]
+tests_require=['nose','coveralls']
 from setuptools import setup,find_packages
 
 
@@ -11,9 +11,10 @@ setup(name='pyAIRtools',
 	  author='Michael Hirsch, Ph.D.',
 	  version = '1.0.0',
       long_description=open('README.rst').read(),
-      install_requires=req,
+      install_requires=install_requires,
       python_requires='>=2.7',
       extras_require={'plot':['matplotlib'],'cvx':['cvxopt'],
-                      'octave':['oct2py']}
+                      'octave':['oct2py'],'test':tests_require},
+      tests_require=tests_require,
 	  )
 

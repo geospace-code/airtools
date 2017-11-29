@@ -1,5 +1,5 @@
 from __future__ import division
-from numpy import where,absolute,log, atleast_1d,zeros,ones,empty,spacing,array,ndarray
+from numpy import log, atleast_1d,zeros,ones,empty,spacing,array,ndarray
 from numpy.linalg import norm
 from warnings import warn
 
@@ -103,7 +103,7 @@ def maxent(A,b,lamb,w=None,x0=None):
                 h = 1. + alpha_right*p/x
             else:
                 # Step-length control to insure a positive x + alpha*p.
-                I = where(p < 0)[0]
+                I = p < 0
                 alpha_right = (-x[I] / p[I]).min()
                 h = 1. + alpha_right*p / x
                 delta = spacing(1) #replacement for matlab eps
@@ -133,14 +133,14 @@ def maxent(A,b,lamb,w=None,x0=None):
                     # Use the secant method to improve the root of phi(alpha) = 0
                     # to within an accuracy determined by tau.
                     phiit = 0
-                    while absolute(phi/phi0) > tau:
+                    while abs(phi/phi0) > tau:
                         phiold = phi; alphaold = alpha
                         alpha = (alpha_left*phi_right - alpha_right*phi_left) / (phi_right - phi_left)
                         z = log(1 + alpha*p/x)
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
                         if phiold == phi and alphaold == alpha and phiit>maxit:
                             warn('secant is not converging: abs(phi/phi0) = ' +
-                                 str(absolute(phi/phi0)) +
+                                 str(abs(phi/phi0)) +
                                  '  terminating phi search on iteration ' + str(phiit))
                             break
                         if phi > 0:
@@ -175,7 +175,7 @@ def maxent(A,b,lamb,w=None,x0=None):
             if it <= flatrange:
                 dF = 1.
             else:
-                dF = absolute(F[it] - F[it-flatrange])/absolute(F[it])
+                dF = abs(F[it] - F[it-flatrange])/abs(F[it])
 
             data[it,...] = array([F[it],norm(delta_x),norm(g)])
             X[...,it] = x
