@@ -161,19 +161,14 @@ subroutine init_random_seed()
 ! don't call this function repeatedly in your program.
 ! The time resolution of int32 clock isn't so high, and the seed only
 ! accepts int32, despite nice clock performance with int64
-integer :: n,i
-integer ::   clock
+integer :: n,i, clock
 integer, allocatable :: seed(:)
 
 
 call random_seed(size=n)
 allocate(seed(n))
 call system_clock(count=clock)
-
-do concurrent (i=1:n)
-  seed(i) = clock + 37 * (i-1)
-enddo
-
+seed = clock + 37 * [ (i - 1, i = 1, n) ]
 call random_seed(put=seed)
 
 end subroutine
