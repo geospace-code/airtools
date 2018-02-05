@@ -55,7 +55,7 @@ def test_lsqlin():
     try:
         from cvxopt import matrix
     except (ImportError,RuntimeError):
-        logging.warning('skipped LSQ test due to missing CVXOPT library')
+        logging.error('skipped LSQ test due to missing CVXOPT library')
         return
 
     import airtools.lsqlin as lsqlin

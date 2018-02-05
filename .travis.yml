@@ -8,8 +8,7 @@ python:
 os:
   - linux
 
-notifications:
-  email: false
+group: travis_latest
 
 git:
   depth: 3

@@ -12,22 +12,22 @@
 python-AIRtools
 ===============
 
-Port of P.C. Hansen's notable AIRtools Matlab suite of inversion / regularization tools
-PC Hansen's ReguTools ports are also here.
+Port of P.C. Hansen and J. S. Jørgensen `AIRtools <http://www2.compute.dtu.dk/~pcha/AIRtoolsII/>`_ Matlab suite of inversion / regularization tools
+ReguTools ports are also here.
 
 Also includes linear constrained least squares solver using cvxopt in ``lsqlin.py``
 
 .. contents::
 
 Install
--------
+=======
 ::
 
     python -m pip install -e .
     
-Examples
---------
-See ``tests/test.py``. 
+
+Usage
+=====
 Just paste the code from each test into your console for the function you're interested in. 
 Would you like to submit a pull request for an inversion example making a cool plot? 
 
@@ -45,7 +45,17 @@ rzr.py              remove unused or little used rows from tomographic projectio
 lsqlin.py           linear constrained least squares solver
 
 matlab/logmart.m    Implementation of log-MART used by Joshua Semeter in several publications
+
+fortran/logmart.f90  log-MART in Fortran
+
 ================    ===========
+
+
+
+
+Examples
+--------
+See ``tests/test.py``. 
 
 
 Tests
