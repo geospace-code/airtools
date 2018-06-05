@@ -12,10 +12,10 @@
 python-AIRtools
 ===============
 
-Port of P.C. Hansen and J. S. Jørgensen `AIRtools <http://www2.compute.dtu.dk/~pcha/AIRtoolsII/>`_ Matlab suite of inversion / regularization tools
-ReguTools ports are also here.
-
+Limited subset of P.C. Hansen and J. S. Jørgensen `AIRtools 1.0 <http://www2.compute.dtu.dk/~pcha/AIRtoolsII/>`_ Matlab suite of inversion / regularization tools, along with some ReguTools functions.
 Also includes linear constrained least squares solver using cvxopt in ``lsqlin.py``
+
+We only converted the functions we needed, many more are available in Matlab from `AIRtools 2 <https://github.com/jakobsj/AIRToolsII>`_.
 
 .. contents::
 
