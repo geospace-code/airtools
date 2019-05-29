@@ -12,8 +12,13 @@ from airtools.logmart import logmart
 """
 generate test problems from Julia by
 
+```julia
 using MatrixDepot
-matrixdepot("deriv2",3,false)
+md = mdopen("deriv2",3,false)
+md.A
+md.b
+md.x
+```
 """
 A = array([[-0.0277778, -0.0277778, -0.00925926],
            [-0.0277778, -0.0648148, -0.0277778],
@@ -32,7 +37,8 @@ def test_kaczmarz():
 
 
 def test_logmart():
-    x_pylog = logmart(A, b, 0.00002, 0.)[0]
+    x_pylog = logmart(A, b, x0=x_true*.1)[0]
+    assert b == approx(A@x_true)
     assert x_pylog == approx(x_true, rel=1e-4)
 
 
