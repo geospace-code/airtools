@@ -1,7 +1,5 @@
-from __future__ import division
 import logging
 import numpy as np
-from matplotlib.pyplot import figure
 '''
 PICARD Visual inspection of the Picard condition.
 
@@ -27,7 +25,7 @@ PICARD Visual inspection of the Picard condition.
 '''
 
 
-def picard(U, s, b, d=0):
+def picard(U, s, b, d=0) -> tuple:
 
     n, ps = np.atleast_2d(s).T.shape
 
@@ -51,6 +49,7 @@ def picard(U, s, b, d=0):
 
 
 def plotpicard(n, s, beta, eta, keta, ps):
+    from matplotlib.pyplot import figure
     ni = np.arange(n)
     ax = figure().gca()
     ax.semilogy(ni, s, '.-')  # breaks for inf
