@@ -2,9 +2,9 @@
 from numpy import array
 import pytest
 from pytest import approx
+from pathlib import Path
 
-from airtools.maxent import maxent
-from airtools.kaczmarz import kaczmarz
+Rmatlab = Path(__file__).resolve().parents[1]/'matlab'
 """
 generate test problems from Julia by
 
@@ -23,32 +23,34 @@ x_true = array([0.09622504486493762,
 
 
 def test_maxent():
-    # %% first with Python
-
-    x_python, rho, eta = maxent(A, b, 0.00002)
-    assert x_python == approx(x_true, rel=1e-4)
-
-# %% then with Octave using original Matlab code
     oct2py = pytest.importorskip('oct2py')
 
     oc = oct2py.Oct2Py(timeout=10, oned_as='column')
-    oc.addpath('../matlab')
+    oc.addpath(str(Rmatlab))
 
-    x_matlab = oc.maxent(A, b, 0.00002).squeeze()
-    assert x_matlab == approx(x_true)
+    x_matlab = oc.maxent(A, b, 2.5e-5).squeeze()
+    assert x_matlab == approx(x_true, rel=0.1)
 
 
 def test_kaczmarz():
-    x_python = kaczmarz(A, b, 200)[0]
-    assert x_python == approx(x_true, rel=1e-4)
-
     oct2py = pytest.importorskip('oct2py')
 
     oc = oct2py.Oct2Py(timeout=10, oned_as='column')
-    oc.addpath('../matlab')
+    oc.addpath(str(Rmatlab))
 
     x_matlab = oc.kaczmarz(A, b, 200).squeeze()
-    assert x_matlab == approx(x_true)
+    assert x_matlab == approx(x_true, rel=0.1)
+
+
+@pytest.mark.xfail(reason='issue with original Matlab code')
+def test_logmart():
+    oct2py = pytest.importorskip('oct2py')
+
+    oc = oct2py.Oct2Py(timeout=10, oned_as='column')
+    oc.addpath(str(Rmatlab))
+
+    x_matlab = oc.logmart(b, A)
+    assert x_matlab == approx(x_true, rel=1e-4)
 
 
 if __name__ == '__main__':

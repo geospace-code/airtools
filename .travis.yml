@@ -1,21 +1,23 @@
 language: python
-fast_finish: true
+group: travis_latest
+dist: xenial
+
+git:
+  depth: 25
+  quiet: true
 
 python:
   - 3.6
-  - 2.7
 
 os:
   - linux
 
-group: travis_latest
 
-git:
-  depth: 3
+install:
+- python -m pip install -e .[tests,cov]
+- flake8
+- mypy .
 
-
-install: python -m pip install -e .[tests]
-
-script: coverage run tests/test.py -v
+script: pytest --cov
 
 after_success: coveralls
