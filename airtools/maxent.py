@@ -1,5 +1,4 @@
-from __future__ import division
-from numpy import log, atleast_1d,zeros,ones,empty,spacing,array,ndarray
+from numpy import atleast_2d, log, atleast_1d, zeros, ones, empty, spacing, array
 from numpy.linalg import norm
 from warnings import warn
 
@@ -29,64 +28,73 @@ MAXENT Maximum entropy regularization.
  Second Edition, Wiley, Chichester, 1987.
 '''
 
-def maxent(A,b,lamb,w=None,x0=None):
-    assert isinstance(A,ndarray) and A.ndim==2,'A is expected to be a 2-D Numpy array'
-    
-    assert isinstance(b,ndarray), 'b is expected to be a 1-D Numpy array'
-    b=b.squeeze()
-    assert b.ndim<=1,'b is expected to be a 1-D Numpy array'
-    
+
+def maxent(A, b, lamb, w=None, x0=None):
+    A = atleast_2d(A)
+
+    if A.ndim != 2:
+        raise ValueError('A is expected to be a 2-D Numpy array')
+
+    b = atleast_1d(b)
+    b = b.squeeze()
+
+    if b.ndim > 1:
+        raise ValueError('b is expected to be a 1-D Numpy array')
+
     lamb = atleast_1d(lamb)
-    assert lamb.ndim==1 and lamb.size>=0,'lamb must be a 1-D vector or scalar'
-    assert (lamb >= 0).all(),'Regularization parameter lamb must be positive'
+
+    if lamb.ndim != 1 or lamb.size < 0:
+        raise ValueError('lamb must be a 1-D vector or scalar')
+
+    if (lamb < 0).all():
+        raise ValueError('Regularization parameter lamb must be positive')
 
 
-#%% Set defaults.
+# %% Set defaults.
     flat = 1e-3     # Measures a flat minimum.
     flatrange = 10  # How many iterations before a minimum is considered flat.
     maxit = 150     # Maximum number of CG iterations.
-    minstep = 1e-12 # Determines the accuracy of x_lambda.
+    minstep = 1e-12  # Determines the accuracy of x_lambda.
     sigma = 0.5     # Threshold used in descent test.
     tau0 = 1e-3    # Initial threshold used in secant root finder.
 
-#%% Initialization.
-    m,n = A.shape
+# %% Initialization.
+    m, n = A.shape
     lamb = atleast_1d(lamb)
     Nlambda = lamb.size
 
-
-    x_lambda = zeros((n,Nlambda),order='F')
+    x_lambda = zeros((n, Nlambda), order='F')
     F = zeros(maxit)
 
     if w is None:
-        w  = ones(n,dtype=float) #needs to be column vector
+        w = ones(n, dtype=float)  # needs to be column vector
 
     if x0 is None:
-        x0 = ones(n,dtype=float) #needs to be column vector
+        x0 = ones(n, dtype=float)  # needs to be column vector
 
-    rho = empty(Nlambda,dtype=float)
-    eta = empty(Nlambda,dtype=float)
+    rho = empty(Nlambda, dtype=float)
+    eta = empty(Nlambda, dtype=float)
 
 # Treat each lambda separately.
     for j in range(Nlambda):
 
         # Prepare for nonlinear CG iteration.
         l2 = lamb[j]**2.
-        x  = x0
+        x = x0
         Ax = A.dot(x)
-        g  = 2.*A.T.dot(Ax - b) + l2*(1 + log(w*x))
-        p  = -g
-        r  = Ax - b
+        g = 2.*A.T.dot(Ax - b) + l2*(1 + log(w*x))
+        p = -g
+        r = Ax - b
 
         # Start the nonlinear CG iteration here.
         delta_x = x
         dF = 1
         it = 0
         phi0 = p.T.dot(g)
-        data = zeros((maxit,3),dtype=float,order='F')
-        X = zeros((n,maxit),dtype=float,order='F')
+        data = zeros((maxit, 3), dtype=float, order='F')
+        X = zeros((n, maxit), dtype=float, order='F')
 
-        while (norm(delta_x,2) > minstep*norm(x,2) and dF > flat and it < maxit and phi0 < 0):
+        while (norm(delta_x, 2) > minstep*norm(x, 2) and dF > flat and it < maxit and phi0 < 0):
             # Compute some CG quantities.
             Ap = A.dot(p)
             gamma = Ap.T.dot(Ap)
@@ -103,10 +111,10 @@ def maxent(A,b,lamb,w=None,x0=None):
                 h = 1. + alpha_right*p/x
             else:
                 # Step-length control to insure a positive x + alpha*p.
-                I = p < 0
-                alpha_right = (-x[I] / p[I]).min()
+                i = p < 0
+                alpha_right = (-x[i] / p[i]).min()
                 h = 1. + alpha_right*p / x
-                delta = spacing(1) #replacement for matlab eps
+                delta = spacing(1)  # replacement for matlab eps
                 while h.min() <= 0:
                     alpha_right = alpha_right*(1 - delta)
                     h = 1 + alpha_right*p / x
@@ -117,8 +125,7 @@ def maxent(A,b,lamb,w=None,x0=None):
             alpha = alpha_right
             phi = phi_right
 
-
-            if phi_right <= 0: # Special treatment of the case when phi(alpha_right) = 0.
+            if phi_right <= 0:  # Special treatment of the case when phi(alpha_right) = 0.
                 z = log(1 + alpha*p/x)
                 g_new = g + l2*z + 2*alpha*v
                 t = g_new.T.dot(g_new)
@@ -126,7 +133,9 @@ def maxent(A,b,lamb,w=None,x0=None):
             else:
                 # The regular case: improve the steplength alpha iteratively
                 # until the new step is a descent step.
-                t = 1; u = 1; tau = tau0
+                t = 1
+                u = 1
+                tau = tau0
                 uit = 0
                 while u > -sigma*t:
                     uold = u
@@ -134,11 +143,12 @@ def maxent(A,b,lamb,w=None,x0=None):
                     # to within an accuracy determined by tau.
                     phiit = 0
                     while abs(phi/phi0) > tau:
-                        phiold = phi; alphaold = alpha
+                        phiold = phi
+                        alphaold = alpha
                         alpha = (alpha_left*phi_right - alpha_right*phi_left) / (phi_right - phi_left)
                         z = log(1 + alpha*p/x)
                         phi = phi0 + 2*alpha*gamma + l2*p.T.dot(z)
-                        if phiold == phi and alphaold == alpha and phiit>maxit:
+                        if phiold == phi and alphaold == alpha and phiit > maxit:
                             warn('secant is not converging: abs(phi/phi0) = ' +
                                  str(abs(phi/phi0)) +
                                  '  terminating phi search on iteration ' + str(phiit))
@@ -147,8 +157,8 @@ def maxent(A,b,lamb,w=None,x0=None):
                             alpha_right = alpha
                             phi_right = phi
                         else:
-                            alpha_left  = alpha
-                            phi_left  = phi
+                            alpha_left = alpha
+                            phi_left = phi
                         phiit += 1
                     # To check the descent step, compute u = p'*g_new and
                     # t = norm(g_new)^2, where g_new is the gradient at x + alpha*p.
@@ -156,13 +166,14 @@ def maxent(A,b,lamb,w=None,x0=None):
                     t = g_new.T.dot(g_new)
                     beta = (t - g.T.dot(g_new))/(phi - phi0)
                     u = -t + beta*phi
-                    if u==uold and uit>maxit:
+                    if u == uold and uit > maxit:
                         warn('excessive descent iterations, terminating search on iteration ' + str(phiit))
                         break
                     tau = tau/10.
-                    uit+=1
+                    uit += 1
             # Update the iteration vectors.
-            g = g_new; delta_x = alpha*p
+            g = g_new
+            delta_x = alpha*p
             x = x + delta_x
             p = -g + beta*p
             r = r + alpha*Ap
@@ -171,19 +182,17 @@ def maxent(A,b,lamb,w=None,x0=None):
             # Compute some norms and check for flat minimum.
             rho[j] = norm(r)
             eta[j] = x.T.dot(log(w*x))
-            F[it]  = rho[j]**2 + l2*eta[j]
+            F[it] = rho[j]**2 + l2*eta[j]
             if it <= flatrange:
                 dF = 1.
             else:
                 dF = abs(F[it] - F[it-flatrange])/abs(F[it])
 
-            data[it,...] = array([F[it],norm(delta_x),norm(g)])
-            X[...,it] = x
-
+            data[it, ...] = array([F[it], norm(delta_x), norm(g)])
+            X[..., it] = x
 
             it += 1
 
+        x_lambda[..., j] = x
 
-        x_lambda[...,j] = x
-
-    return x_lambda.squeeze(),rho,eta
+    return x_lambda.squeeze(), rho, eta

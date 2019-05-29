@@ -24,12 +24,12 @@ def rzr(A, b=None, Nthr=0):
      ported to Python by Michael Hirsch
     '''
 
-    s = (A>0).sum(axis=1) #number of non-zero elements per row
+    s = (A > 0).sum(axis=1)  # number of non-zero elements per row
     goodInd = s > Nthr
-    ngood = goodInd.sum()
-    A = A[goodInd,:]
+    # ngood = goodInd.sum()
+    A = A[goodInd, :]
 
     if b is not None:
         b = b[goodInd]
 
-    return A,b,goodInd
+    return A, b, goodInd
