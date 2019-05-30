@@ -1,6 +1,8 @@
 [![image](https://travis-ci.org/scivision/airtools.svg?branch=master)](https://travis-ci.org/scivision/airtools)
 [![image](https://coveralls.io/repos/scivision/airtools/badge.svg?branch=master&service=github)](https://coveralls.io/github/scivision/airtools?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/07d00b91f79c958c073a/maintainability)](https://codeclimate.com/github/scivision/airtools/maintainability)
+[![PyPi versions](https://img.shields.io/pypi/pyversions/airtools.svg)](https://pypi.python.org/pypi/airtools)
+[![PyPi Download stats](http://pepy.tech/badge/airtools)](http://pepy.tech/project/airtools)
 
 # AIRtools
 
