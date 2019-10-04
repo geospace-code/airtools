@@ -4,9 +4,11 @@ on:
   push:
     paths:
     - "**/*.py"
+    - "**/*.f90"
   pull_request:
     paths:
     - "**/*.py"
+    - "**/*.f90"
 
 jobs:
 

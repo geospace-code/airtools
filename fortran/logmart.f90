@@ -1,44 +1,6 @@
-! solve b=Ax using parallel log-ent mart.
-! Matlab by Joshua Semeter
-! Fortran by Michael Hirsch
+module art
 
-program test_logmart
-use iso_fortran_env, only: wp=>real64
 implicit none
-
-
-
-integer, parameter :: N=3
-real(wp) :: A(N,N)
-real(wp), parameter :: x_true(N)=[5,5,5] 
-real(wp),parameter :: pi = 4.*atan(1.), errtol=0.05_wp
-real(wp), dimension(N) :: x, noise, b,bias
-
-call init_random_seed()
-
-A = reshape([1,0,0,0,1,0,0,0,1],[N,N])
-
-
-! ---- noisy observation
-call randn(bias)
-print*,'bias',bias
-A = A! * spread(bias,2,N)
-
-call randn(noise)
-print*,'noise',noise
-b = matmul(A,x_true) + 0.1_wp*noise
-
-! ---- inversion
-call logmart(A,b,x=x) 
-
-! --- check estimate
-if (all(abs(x-x_true) < errtol*maxval(x_true))) then
-  print*,'logmart SUCCESS'
-else
-  print*,x
-  print*,'larger than',errtol*100,' % error'
-  stop 
-endif            
 
 contains
 
@@ -138,39 +100,4 @@ x = xold
 
 end subroutine logmart
 
-
-subroutine randn(noise)
-! implements Box-Muller Transform
-! https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
-!
-! Output:
-! noise: Gaussian noise vector
-
-real(wp),intent(out) :: noise(:)
-real(wp),dimension(size(noise)) :: u1, u2 
-
-call random_number(u1)
-call random_number(u2)
-
-noise = sqrt(-2._wp * log(u1)) * cos(2._wp * pi * u2)
-
-end subroutine randn
-
-
-subroutine init_random_seed()
-! don't call this function repeatedly in your program.
-! The time resolution of int32 clock isn't so high, and the seed only
-! accepts int32, despite nice clock performance with int64
-integer :: n,i, clock
-integer, allocatable :: seed(:)
-
-
-call random_seed(size=n)
-allocate(seed(n))
-call system_clock(count=clock)
-seed = clock + 37 * [ (i - 1, i = 1, n) ]
-call random_seed(put=seed)
-
-end subroutine
-
-end program
+end module art
