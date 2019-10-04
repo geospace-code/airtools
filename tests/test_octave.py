@@ -1,57 +1,95 @@
 #!/usr/bin/env python
-from numpy import array
+import numpy as np
 import pytest
 from pytest import approx
 from pathlib import Path
+import airtools
 
 Rmatlab = Path(__file__).resolve().parents[1]/'matlab'
 """
 generate test problems from Julia by
 
 using MatrixDepot
-matrixdepot("deriv2",3,false)
 """
-A = array([[-0.0277778, -0.0277778, -0.00925926],
-           [-0.0277778, -0.0648148, -0.0277778],
-           [-0.00925926, -0.0277778, -0.0277778]])
-b = array([-0.01514653483985129,
-           -0.03474793286789414,
-           -0.022274315940957783])
-x_true = array([0.09622504486493762,
-                0.28867513459481287,
-                0.48112522432468807])
+A = {"identity": np.diag([5., 5., 5., 5.]),
+     "forsythe": np.array([[0, 1, 0, 0],
+                           [0, 0, 1, 0],
+                           [0, 0, 0, 1],
+                           [1.49012e-8, 0, 0, 0]]),
+     "gravity": np.array([[4.0, 1.41421,  0.357771, 0.126491],
+                          [1.41421, 4.0, 1.41421, 0.357771],
+                          [0.357771, 1.41421, 4.0, 1.41421],
+                          [0.126491, 0.357771, 1.41421, 4.0]]),
+     "fiedler": np.array([[0, 1, 2, 3],
+                          [1, 0, 1, 2],
+                          [2, 1, 0, 1],
+                          [3, 2, 1, 0]]),
+     "hilbert": np.array([[1., 1/2, 1/3, 1/4],
+                          [1/2, 1/3, 1/4, 1/5],
+                          [1/3, 1/4, 1/5, 1/6],
+                          [1/4, 1/5, 1/6, 1/7]])
+     }
 
 
-def test_maxent():
+x = np.array([1.,
+              3.,
+              0.5,
+              2.])
+
+used = ("identity", "fiedler")
+
+
+@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
+def test_maxent(A):
     oct2py = pytest.importorskip('oct2py')
 
-    oc = oct2py.Oct2Py(timeout=10, oned_as='column')
-    oc.addpath(str(Rmatlab))
+    b = A @ x
+    lamb = 2.5e-5
 
-    x_matlab = oc.maxent(A, b, 2.5e-5).squeeze()
-    assert x_matlab == approx(x_true, rel=0.1)
+    with oct2py.Oct2Py(timeout=10, oned_as='column') as oc:
+        oc.addpath(str(Rmatlab))
+        x_matlab = oc.maxent(A, b, lamb).squeeze()
+    assert x_matlab == approx(x, rel=0.01)
+
+    x_est = airtools.maxent(A, b, lamb=lamb)[0]
+    assert x_est == approx(x_matlab)
 
 
-def test_kaczmarz():
+@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
+def test_kaczmarz(A):
     oct2py = pytest.importorskip('oct2py')
 
-    oc = oct2py.Oct2Py(timeout=10, oned_as='column')
-    oc.addpath(str(Rmatlab))
+    b = A @ x
+    max_iter = 200
+    lamb = 1.
+    x0 = np.zeros_like(x)
 
-    x_matlab = oc.kaczmarz(A, b, 200).squeeze()
-    assert x_matlab == approx(x_true, rel=0.1)
+    with oct2py.Oct2Py(timeout=10, oned_as='column') as oc:
+        oc.addpath(str(Rmatlab))
+        x_matlab = oc.kaczmarz(A, b, max_iter, x0, {'lambda': lamb}).squeeze()
+    assert x_matlab == approx(x, rel=0.01)
+
+    x_est = airtools.kaczmarz(A, b, x0=x0, max_iter=max_iter, lamb=lamb)[0]
+    assert x_est == approx(x_matlab)
 
 
-@pytest.mark.xfail(reason='issue with original Matlab code')
-def test_logmart():
+@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
+def test_logmart(A):
     oct2py = pytest.importorskip('oct2py')
 
-    oc = oct2py.Oct2Py(timeout=10, oned_as='column')
-    oc.addpath(str(Rmatlab))
+    b = A @ x
+    relax = 5.
+    max_iter = 2000
+    sigma = 1.
 
-    x_matlab = oc.logmart(b, A)
-    assert x_matlab == approx(x_true, rel=1e-4)
+    with oct2py.Oct2Py(timeout=10, oned_as='column') as oc:
+        oc.addpath(str(Rmatlab))
+        x_matlab = oc.logmart(b, A, relax, [], sigma, max_iter).squeeze()
+    assert x_matlab == approx(x, rel=0.01)
+
+    x_est = airtools.logmart(A, b, relax=relax, sigma=sigma, max_iter=max_iter)[0]
+    assert x_est == approx(x_matlab, rel=1e-5)
 
 
 if __name__ == '__main__':
-    pytest.main(['-x', __file__])
+    pytest.main([__file__])

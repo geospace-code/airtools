@@ -2,34 +2,32 @@ from numpy import atleast_2d, log, atleast_1d, zeros, ones, empty, spacing, arra
 from numpy.linalg import norm
 from warnings import warn
 
-'''
-Michael Hirsch port of P.C. Hansen Matlab ReguTools code
-MAXENT Maximum entropy regularization.
-
- x_lambda,rho,eta = maxent(A,b,lambda,w,x0)
-
- Maximum entropy regularization:
-    min { || A x - b ||^2 + lambda^2*x'*log(diag(w)*x) } ,
- where -x'*log(diag(w)*x) is the entropy of the solution x.
- If no weights w are specified, unit weights are used.
-
- If lambda is a vector, then x_lambda is a matrix such that
-    x_lambda = [x_lambda(1), x_lambda(2), ... ] .
-
- This routine uses a nonlinear conjugate gradient algorithm with "soft"
- line search and a step-length control that insures a positive solution.
- If the starting vector x0 is not specified, then the default is
-    x0 = norm(b)/norm(A,1)*ones(n,1) .
-
- Per Christian Hansen, IMM and Tommy Elfving, Dept. of Mathematics,
- Linkoping University, 06/10/92.
-
- Reference: R. Fletcher, "Practical Methods for Optimization",
- Second Edition, Wiley, Chichester, 1987.
-'''
-
 
 def maxent(A, b, lamb, w=None, x0=None):
+    '''
+    MAXENT Maximum entropy regularization.
+
+     x_lambda,rho,eta = maxent(A,b,lambda,w,x0)
+
+     Maximum entropy regularization:
+        min { || A x - b ||^2 + lambda^2*x'*log(diag(w)*x) } ,
+     where -x'*log(diag(w)*x) is the entropy of the solution x.
+     If no weights w are specified, unit weights are used.
+
+     If lambda is a vector, then x_lambda is a matrix such that
+        x_lambda = [x_lambda(1), x_lambda(2), ... ] .
+
+     This routine uses a nonlinear conjugate gradient algorithm with "soft"
+     line search and a step-length control that insures a positive solution.
+     If the starting vector x0 is not specified, then the default is
+        x0 = norm(b)/norm(A,1)*ones(n,1) .
+
+     Per Christian Hansen, IMM and Tommy Elfving, Dept. of Mathematics,
+     Linkoping University, 06/10/92.
+
+     Reference: R. Fletcher, "Practical Methods for Optimization",
+     Second Edition, Wiley, Chichester, 1987.
+    '''
     A = atleast_2d(A)
 
     if A.ndim != 2:
@@ -46,7 +44,7 @@ def maxent(A, b, lamb, w=None, x0=None):
     if lamb.ndim != 1 or lamb.size < 0:
         raise ValueError('lamb must be a 1-D vector or scalar')
 
-    if (lamb < 0).all():
+    if (lamb < 0).any():
         raise ValueError('Regularization parameter lamb must be positive')
 
 

@@ -1,36 +1,41 @@
 #!/usr/bin/env python
 """
-solve b=Ax using parallel log-ent mart.
+solve b=Ax using parallel log-entropy MART  (De Pierro 1991)
+
 Original Matlab by Joshua Semeter
 port to Python by Michael Hirsch
 """
 import numpy as np
+import math
 
 
 def logmart(A: np.ndarray, b: np.ndarray,
             *,
             relax: float = 1.,
             x0: float = None,
-            sigma: float = None,
-            max_iter: int = 200) -> tuple:
+            sigma: float = 1.,
+            max_iter: int = 20) -> tuple:
     """
-    Displays delta Chisquare.
-    Program is stopped if Chisquare increases.
-    A is NxM array
-    b is Nx1 vector
-    returns Mx1 vector
+    estimation halted based on chi**2 value
+    A and b must be all NON-NEGATIVE!
 
-    relax	     user specified relaxation constant	(default is 20.)
-    x0	     user specified initial guess (N vector)  (default is backproject y, i.e., y#A)
-    max_iter	user specified max number of iterations (default is 20)
+    Parameters
+    ----------
+    A: numpy.ndarray
+        NxM array "projection"
+    b: numpy.ndarray
+        N column vector "observation"
 
-    AUTHOR:	Joshua Semeter
-    LAST MODIFIED:	5-2015
+    Returns
+    -------
+    x_est: numpy.ndarray
+        M column vector estimate of "true" x in b = A @ x
 
-      Simple test problem
-    A = np.diag([5, 5, 5])
-    x = np.array([1,2,3])
-    b = A @ x
+    Matlab logmart.m AUTHOR: Joshua Semeter 5-2015
+
+    >>> A = np.diag([5, 5, 5])
+    >>> x = np.array([1,2,3])
+    >>> b = A @ x
     """
 # %% parameter check
     if b.ndim != 1:
@@ -38,55 +43,52 @@ def logmart(A: np.ndarray, b: np.ndarray,
     if A.ndim != 2:
         raise ValueError('A must be a matrix')
     if A.shape[0] != b.size:
-        raise ValueError('A and y number of rows must match')
-    if not isinstance(relax, float):
+        raise ValueError('A and b: number of rows must match')
+    if not isinstance(relax, (int, float)):
         raise ValueError('relax is a scalar float')
+    if (A < 0).any():
+        raise ValueError('A must be all non-negative')
+    if (b < 0).any():
+        raise ValueError('b must be all non-negative')
 
     b = b.copy()  # needed to avoid modifying outside this function!
 # %% set defaults
-    if sigma is None:
-        sigma = np.ones_like(b)
-
     if x0 is None:  # backproject
-        x = A.T @ b / A.ravel().sum()
-        xA = A @ x
-        x = x * b.max() / xA.max()
+        x = A.T @ b / A.sum()
+        x *= b.max() / (A @ x).max()
     elif isinstance(x0, (float, int)) or x0.size == 1:  # replicate
         x = x0 * np.ones_like(b)
     else:
         x = x0
-# %% make sure there are no 0's in y
+    if not x.size == A.shape[1]:
+        raise ValueError('x0 must be scalar or match Ncolumns of A')
+# %% make sure there are no 0's in b
     b[b <= 1e-8] = 1e-8
+    x[x < 1e-8] = 1e-8
     # W=sigma;
     # W=linspace(1,0,size(A,1))';
     # W=rand(size(A,1),1);
     W = np.ones(A.shape[0])
     W = W / W.sum()
 
-    i = 0
-    done = False
-    arg = ((A @ x - b)/sigma)**2.
-    chi2 = np.sqrt(arg.sum())
-
+    chi2 = chi_squared(A, b, x, sigma)
 # %%  iterate solution, plot estimated data (diag elems of x#A)
-    while not done:
-        i += 1
-        xold = x
+    for i in range(max_iter):
+        x_prev = x
         xA = A @ x
         t = (1/xA).min()
-        C = relax*t*(1.-(xA/b))
-        x = x / (1 - x*(A.T @ (W*C)))
+        C = relax * t * (1 - xA/b)
+        x /= (1 - x*(A.T @ (W*C)))
 # %% monitor solution
         chiold = chi2
-        chi2 = np.sqrt((((xA - b)/sigma)**2).sum())
-        # dchi2=(chi2-chiold);
-        done = ((chi2 > chiold) & (i > 2)) | (i == max_iter) | (chi2 < 0.7)
-# %% plot
-#        figure(9); clf; hold off;
-#        Nest=reshape(x,69,83);
-#        imagesc(Nest); caxis([0,1e11]);
-#        set(gca,'YDir','normal'); set(gca,'XDir','normal');
-#        pause(0.02)
-    y_est = A @ xold
+        chi2 = chi_squared(A, b, x, sigma)
+        if i > 1 and chi2 >= chiold:
+            break
+        # if chi2 < 0.7:
+        #    break
 
-    return xold, y_est, chi2, i
+    return x_prev, chi2, i
+
+
+def chi_squared(A: np.ndarray, b: np.ndarray, x: np.ndarray, sigma: float) -> float:
+    return math.sqrt((((A @ x - b)/sigma)**2).sum())

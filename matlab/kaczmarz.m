@@ -6,7 +6,7 @@ function [X,info] = kaczmarz(A,b,K,x0,options)
 %   [X,info] = kaczmarz(A,b,K,x0,options)
 %
 % Implements Kaczmarz's method for the system Ax = b:
-%       
+%
 %       x^{k+1} = x^k + lambda*(b_i - a^i'*x^k)/(||a^i||_2^2)*a^i
 %
 % where a_i' is the i-th row of A, and i = (k mod m) + 1.
@@ -51,15 +51,12 @@ function [X,info] = kaczmarz(A,b,K,x0,options)
 % Maria Saxild-Hansen and Per Chr. Hansen, July 5, 2015, DTU Compute.
 
 % Reference: G. T. Herman, Fundamentals of Computerized Tomography,
-% Image Reconstruction from Projections, Springer, New York, 2009. 
+% Image Reconstruction from Projections, Springer, New York, 2009.
 
 [m,n] = size(A);
 A = A';  % Faster to perform sparse column operations.
 
-% Check the number of inputs.
-if nargin < 3
-    error('Too few input arguments')
-end
+narginchk(3,5)
 
 % Default value of starting vector x0.
 if nargin < 4 || isempty(x0)
@@ -83,7 +80,7 @@ if nargin < 5
     Knew = sort(K);
     kmax = Knew(end);
     X = zeros(n,length(K));
-    
+
     % Default is no nonnegativity or box constraint or damping.
     nonneg = false;
     boxcon = false;
@@ -91,14 +88,14 @@ if nargin < 5
 
 else
 % Check the contents of options, if present.
-    
+
     % Nonnegativity.
     if isfield(options,'nonneg')
         nonneg = options.nonneg;
     else
         nonneg = false;
     end
-    
+
     % Box constraints [0,L].
     if isfield(options,'box')
         nonneg = true;
@@ -107,7 +104,7 @@ else
     else
         boxcon = false;
     end
-    
+
     % Damping.
     if isfield(options,'damping')
         damp = options.damping;
@@ -115,7 +112,7 @@ else
     else
         damp = 0;
     end
-    
+
     if isfield(options,'lambda')
         if isnumeric(options.lambda)
             lambda = options.lambda;
@@ -129,7 +126,7 @@ else
     else
         lambda = 1;
     end
-    
+
     % Stopping rules
     if isfield(options,'stoprule') && isfield(options.stoprule,'type')
         stoprule = options.stoprule.type;
@@ -141,7 +138,7 @@ else
                 else
                     error('The factor taudelta must be specified when using DP')
                 end
-                
+
                 % Check that the first iteration should be performed:
                 nrk = norm(b - A'*x0);  % Remember that A is transposed.
                 if nrk <= taudelta
@@ -149,33 +146,33 @@ else
                     X = x0;
                     return
                 end % end the DP-rule.
-                
+
             elseif strncmpi(stoprule,'NC',2)
                 % NCP stopping rule.
                 dk = inf;
                 q = floor(m/2);
                 c_white = (1:q)'./q;
-                
+
                 if ~isempty(K)
                     K = [K max(K)+1];
                 end
-                
+
             elseif strncmpi(stoprule,'NO',2)
                 % No stopping rule.
                 if isempty(K)
                     error('No stopping rule specified')
                 end
-                
+
             else
                 % Other stopping rules.
                 error('The chosen stopping rule is not valid')
             end % end different stopping rules.
-            
+
         else
             error('The stoprule type must be a string')
         end % end stoprule is a string.
-        
-        % Determine the maximum number of iterations and initialize the 
+
+        % Determine the maximum number of iterations and initialize the
         % output matrix X.
         if isempty(K)
             kmax = inf;
@@ -184,7 +181,7 @@ else
             Knew = sort(K);
             kmax = Knew(end);
             X = zeros(n,length(K));
-        end % end if isempty K.            
+        end % end if isempty K.
     else
         % Determine the maximum number of iterations and initialize the
         % output vector X.
@@ -196,7 +193,7 @@ else
             X = zeros(n,length(K));
             stoprule = 'NO';
         end
-        
+
     end % end stoprule type specified.
 end % end if nargin includes options.
 
@@ -223,7 +220,7 @@ while ~stop
         if nonneg, xk = max(xk,0); end
         if boxcon, xk = min(xk,L); end
     end
-    
+
     % Stopping rules.
     if strncmpi(stoprule,'DP',2)
         % DP stopping rule.
@@ -236,7 +233,7 @@ while ~stop
                 info = [2 k];
             end
         end % end the DP-rule.
-        
+
     elseif strncmpi(stoprule,'NC',2)
         % NCP stopping rule.
         rkh = fft(b - A'*xk);    % Remember that A is transposed.
@@ -245,7 +242,7 @@ while ~stop
         for index = 1:q
             c(index) = sum(pk(2:index+1))/sum(pk(2:end));
         end
-        
+
         if dk < norm(c-c_white) || k >= kmax
             stop = 1;
             if k >= kmax
@@ -256,7 +253,7 @@ while ~stop
         else
             dk = norm(c-c_white);
         end % end NCP-rule.
-        
+
     elseif strncmpi(stoprule,'NO',2)
         % No stopping rule.
         if k >= kmax
@@ -264,7 +261,7 @@ while ~stop
             info = [0 k];
         end
     end % end stoprule type.
-        
+
     % If the current iteration is requested saved.
     if (~isempty(K) && k == Knew(l+1)) || stop
         l = l + 1;
@@ -280,6 +277,6 @@ while ~stop
         end
         klast = k;
     end
-    
+
 end
 X = X(:,1:l);
