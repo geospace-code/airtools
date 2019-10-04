@@ -52,6 +52,8 @@ def logmart(A: np.ndarray, b: np.ndarray,
         raise ValueError('b must be all non-negative')
 
     b = b.copy()  # needed to avoid modifying outside this function!
+    # %% make sure there are no 0's in b
+    b[b <= 1e-8] = 1e-8
 # %% set defaults
     if x0 is None:  # backproject
         x = A.T @ b / A.sum()
@@ -62,8 +64,7 @@ def logmart(A: np.ndarray, b: np.ndarray,
         x = x0
     if not x.size == A.shape[1]:
         raise ValueError('x0 must be scalar or match Ncolumns of A')
-# %% make sure there are no 0's in b
-    b[b <= 1e-8] = 1e-8
+
     x[x < 1e-8] = 1e-8
     # W=sigma;
     # W=linspace(1,0,size(A,1))';

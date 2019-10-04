@@ -4,11 +4,25 @@ on:
   push:
     paths:
     - "**/*.py"
+    - "**/*.f90"
   pull_request:
     paths:
     - "**/*.py"
+    - "**/*.f90"
 
 jobs:
+
+  fortran:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - run: sudo apt install -yq --no-install-recommends gfortran ninja-build
+    - run: pip install meson
+    - run: meson setup build
+    - run: meson test -C build
 
   linux:
     runs-on: ubuntu-latest

@@ -8,21 +8,51 @@ use random_utils, only: init_random_seed, randn, wp
 
 implicit none
 
-integer, parameter :: N=3
-real(wp) :: A(N,N)
-real(wp), parameter :: x_true(N)=[5,5,5]
-real(wp), parameter :: errtol=0.05_wp
-real(wp), dimension(N) :: x, noise, b,bias
-logical :: add_bias, add_noise
-
-add_bias = .false.
-add_noise = .true.
+integer, parameter :: N=4, M=4
+real(wp), dimension(N,M) :: A1, A2
+real(wp) :: x(M)
+logical :: ok=.true., add_noise = .true.
 
 call init_random_seed()
 
-A = reshape([1,0,0, &
-             0,1,0, &
-             0,0,1], shape(A), order=[2,1])
+A1 = reshape([5,0,0,0, &
+              0,5,0,0, &
+              0,0,5,0, &
+              0,0,0,5], shape(A1), order=[2,1])
+
+A2 = reshape([0,1,2,3, &
+              1,0,1,2, &
+              2,1,0,1, &
+              3,2,1,0], shape(A2), order=[2,1])
+
+x = [1._wp, 3._wp, 0.5_wp, 2._wp]
+
+if (.not. run_test(A1, x, 20,add_noise)) then
+  ok = .false.
+  write(stderr,*) 'failed on identity test'
+endif
+
+if (.not. run_test(A2, x, 2000, add_noise)) then
+  ok = .false.
+  write(stderr,*) 'failed on Fiedler test'
+endif
+
+if (.not. ok) error stop
+
+print *, 'OK: logmart'
+
+contains
+
+logical function run_test(A, x, max_iter, add_noise)
+
+real(wp), intent(in) :: A(:,:), x(:)
+logical, intent(in) :: add_noise
+integer, intent(in) :: max_iter
+
+real(wp), parameter :: errtol=0.05_wp
+real(wp), dimension(size(A,1)) :: noise, x_est, b
+
+run_test = .true.
 
 block
 integer :: i
@@ -33,30 +63,25 @@ enddo
 end block
 
 ! ---- noisy observation
-if (add_bias) then
-  call randn(bias)
-  bias = 0.01_wp * bias
-  print '(/,A,3F10.3)','bias',bias
-  A = A * spread(bias,2,N)
-endif
+b = matmul(A,x)
 
 if (add_noise) then
   call randn(noise)
   noise = 0.01_wp * noise
   print '(/,A,3F10.3)', 'noise',noise
-  b = matmul(A,x_true) + noise
+  b = b + noise
 endif
 
 ! ---- inversion
-call logmart(A,b,x=x)
+call logmart(A,b, max_iter=max_iter, x=x_est)
 
 ! --- check estimate
-if (any(abs(x-x_true) > errtol*maxval(x_true))) then
-  print *,x
+if (any(abs(x_est-x) > errtol*maxval(x))) then
+  print *,x_est
   write (stderr,*) 'larger than',errtol*100,' % error'
-  stop 1
+  run_test = .false.
 endif
 
-print '(/,A)','OK: logmart'
+end function run_test
 
 end program

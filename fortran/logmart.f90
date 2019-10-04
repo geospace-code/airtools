@@ -1,10 +1,12 @@
 module art
 
+use iso_fortran_env, only: wp=>real64
+
 implicit none
 
 contains
 
-pure subroutine logmart(A,b,relax,x0,sigma,max_iter,x)
+pure subroutine logmart(A,b,relax,x0,sigma,max_iter, x)
 ! delta Chisquare.
 ! stopped if Chisquare increases.
 !
@@ -30,45 +32,38 @@ pure subroutine logmart(A,b,relax,x0,sigma,max_iter,x)
 !    x = [1,2,3]
 !    b = A*x
 
-use iso_fortran_env, only: wp=>real64
-
-
 ! --- parameter check
 real(wp), intent(in) :: A(:,:), b(:)
-real(wp), optional, value :: relax
-real(wp), intent(in),optional :: x0(:), sigma(:)
+real(wp), optional, value :: relax, sigma
+real(wp), intent(in),optional :: x0(:)
 integer, optional, value :: max_iter
 real(wp), intent(out) :: x(:)
 
-real(wp), dimension(size(b)) :: xA, op_sigma, W, op_b, arg,xold,c
+real(wp), dimension(size(b)) :: W(size(b)), x_prev,c, op_b
 integer :: i
-logical :: done
 real(wp) :: t,chi2,chiold
 
-op_b = b
 
 if (.not.size(A,1) == size(b)) error stop 'A and b row numbers must match'
+if (any(A<0)) error stop 'A must be non-negative'
+if (any(b<0)) error stop 'b must be non-negative'
+op_b = b
+! --- make sure there are no 0's in b
+where(op_b <= 1e-8) op_b = 1e-8_wp
 
 ! --- set defaults
-if (.not.present(relax)) relax = 1._wp
+if (.not.present(relax)) relax = 1
 if (.not.present(max_iter)) max_iter = 200
+if (.not.present(sigma))  sigma = 1
 
 if (.not.present(x0)) then
-  x  = matmul(transpose(A), b) / sum(A)
-  xA = matmul(A, x)
-  x  = x * maxval(b) / maxval(xA)
+  x  = matmul(transpose(A), op_b) / sum(A)
+  x  = x * maxval(op_b) / maxval(matmul(A, x))
 else
   x = x0
 endif
 
-if (.not.present(sigma)) then
-  op_sigma = 1._wp
-else
-  op_sigma = sigma
-endif
 
-! --- make sure there are no 0's in b
-where(op_b<=1e-8) op_b = 1e-8_wp
 
 ! W=sigma;
 ! W=linspace(1,0,size(A,1))';
@@ -77,27 +72,28 @@ W = 1
 W = W / sum(W)
 
 ! --- iterate solution
-i=0
-done=.false.
-arg= ((matmul(A,x) - op_b) / op_sigma)**2
-chi2 = sqrt(sum(arg))
+chi2 = chi_squared(A, op_b, x, sigma)
 
-do while (.not.done)
-  i = i+1
-  xold = x
-  xA = matmul(A,x)
-  t = minval(1/xA)
-  C = relax*t*(1-(xA/b))
+do i = 1, max_iter
+  x_prev = x
+  t = minval(1/matmul(A,x))
+  C = relax*t*(1-(matmul(A,x)/op_b))
   x = x / (1-x*matmul(transpose(A),W*C))
 ! monitor solution
   chiold = chi2
-  chi2 = sqrt( sum(((xA - b)/op_sigma)**2) )
-  ! dchi2=(chi2-chiold)
-  done = ((chi2>chiold) .and. (i>2)) .or. (i==max_iter) .or. (chi2<0.7)
+  chi2 = chi_squared(A, op_b, x, sigma)
+  if (chi2 > chiold .and. i > 2) exit
 enddo
 
-x = xold
+x = x_prev
 
 end subroutine logmart
+
+
+pure real(wp) function chi_squared(A, b, x, sigma)
+real(wp), intent(in) :: A(:,:), b(:), x(:), sigma
+chi_squared = sqrt(sum(((matmul(A,x) - b) / sigma)**2))
+
+end function chi_squared
 
 end module art

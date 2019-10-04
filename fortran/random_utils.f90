@@ -8,15 +8,15 @@ real(wp),parameter :: pi = 4._wp*atan(1._wp)
 
 contains
 
-subroutine randn(noise)
+impure elemental subroutine randn(noise)
 ! implements Box-Muller Transform
 ! https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
 !
 ! Output:
 ! noise: Gaussian noise vector
 
-real(wp),intent(out) :: noise(:)
-real(wp),dimension(size(noise)) :: u1, u2
+real(wp),intent(out) :: noise
+real(wp) :: u1, u2
 
 call random_number(u1)
 call random_number(u2)

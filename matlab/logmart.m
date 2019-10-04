@@ -26,6 +26,9 @@ assert(size(A,1)==size(y,1),'A and y row numbers must match')
 %% set defaults
 if (nargin<6), max_iter=200.; end
 if (nargin<5), sigma=1.; end
+%% make sure there are no 0's in y
+y(y<=1e-8)=1e-8;
+
 if (nargin<4) || isempty(x0)
     x=(A'*y)./sum(A(:));
     xA=A*x;
@@ -40,8 +43,7 @@ validateattributes(x0, {'numeric'}, {'nonnegative'})
 validateattributes(relax, {'numeric'}, {'scalar', 'positive'})
 validateattributes(sigma, {'numeric'}, {'scalar', 'positive'})
 validateattributes(max_iter, {'numeric'}, {'scalar', 'positive'})
-%% make sure there are no 0's in y
-y(y<=1e-8)=1e-8;
+
 
 % W=sigma;
 % W=linspace(1,0,size(A,1))';
