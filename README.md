@@ -1,6 +1,6 @@
-[![image](https://travis-ci.org/scivision/airtools.svg?branch=master)](https://travis-ci.org/scivision/airtools)
-[![image](https://coveralls.io/repos/scivision/airtools/badge.svg?branch=master&service=github)](https://coveralls.io/github/scivision/airtools?branch=master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/07d00b91f79c958c073a/maintainability)](https://codeclimate.com/github/scivision/airtools/maintainability)
+
+[![Actions Status](https://github.com/scivision/airtools/workflows/ci/badge.svg)](https://github.com/scivision/airtools/actions)
+
 [![PyPi versions](https://img.shields.io/pypi/pyversions/airtools.svg)](https://pypi.python.org/pypi/airtools)
 [![PyPi Download stats](http://pepy.tech/badge/airtools)](http://pepy.tech/project/airtools)
 
@@ -44,7 +44,7 @@ inversion example making a cool plot?
 
 Run a comparison of the Python code with the Matlab code in the [matlab](./matlab) directory by:
 
-    ./tests/test_octave.py
+    python airtools/tests/test_octave.py
 
 which runs the Matlab version via
 [Oct2Py](https://blink1073.github.io/oct2py/).
