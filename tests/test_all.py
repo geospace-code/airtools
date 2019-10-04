@@ -16,26 +16,6 @@ from scipy import sparse
 
 import airtools
 
-A = {"identity": np.diag([5., 5., 5., 5.]),
-     "forsythe": np.array([[0, 1, 0, 0],
-                           [0, 0, 1, 0],
-                           [0, 0, 0, 1],
-                           [1.49012e-8, 0, 0, 0]]),
-     "gravity": np.array([[4.0, 1.41421,  0.357771, 0.126491],
-                          [1.41421, 4.0, 1.41421, 0.357771],
-                          [0.357771, 1.41421, 4.0, 1.41421],
-                          [0.126491, 0.357771, 1.41421, 4.0]]),
-     "fiedler": np.array([[0, 1, 2, 3],
-                          [1, 0, 1, 2],
-                          [2, 1, 0, 1],
-                          [3, 2, 1, 0]]),
-     "hilbert": np.array([[1., 1/2, 1/3, 1/4],
-                          [1/2, 1/3, 1/4, 1/5],
-                          [1/3, 1/4, 1/5, 1/6],
-                          [1/4, 1/5, 1/6, 1/7]])
-     }
-
-
 x = np.array([1.,
               3.,
               0.5,
@@ -44,20 +24,23 @@ x = np.array([1.,
 used = ("identity", "fiedler")
 
 
-@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
-def test_kaczmarz(A):
+@pytest.mark.parametrize("name", used)
+def test_kaczmarz(matrices, name):
+    A = matrices
     x_est = airtools.kaczmarz(A, A@x, max_iter=100, lamb=1.)[0]
     assert x_est == approx(x, rel=0.01)
 
 
-@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
-def test_logmart(A):
+@pytest.mark.parametrize("name", used)
+def test_logmart(matrices, name):
+    A = matrices
     x_est = airtools.logmart(A, A@x, relax=5, max_iter=2000)[0]
     assert x_est == approx(x, rel=0.01)
 
 
-@pytest.mark.parametrize("A", [A[k] for k in used], ids=used)
-def test_maxent(A):
+@pytest.mark.parametrize("name", used)
+def test_maxent(matrices, name):
+    A = matrices
     x_est = airtools.maxent(A, A@x, lamb=1e-6)[0]
     assert x_est == approx(x, rel=0.01)
 
