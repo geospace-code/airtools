@@ -2,6 +2,8 @@
 ! Matlab by Joshua Semeter
 ! Fortran by Michael Hirsch
 
+program test_logmart
+
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use art, only: logmart
 use random_utils, only: init_random_seed, randn, wp

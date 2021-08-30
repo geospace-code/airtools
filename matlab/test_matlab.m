@@ -8,7 +8,7 @@
 function test_matlab()
 addpath('../matlab')
 methods = {'inv','pinv','logmart','maxent','kaczmarz'};
-%% deriv2     
+%% deriv2
 A = [-0.0277778, -0.0277778, -0.00925926;
      -0.0277778, -0.0648148, -0.0277778;
      -0.00925926,-0.0277778, -0.0277778 ];
@@ -18,7 +18,7 @@ b = [-0.01514653483985129;
 x_true = [0.09622504486493762;
           0.28867513459481287;
           0.48112522432468807];
- 
+
 t_deriv2 = runtest(A,b,x_true,'deriv2');
 plott(t_deriv2,methods)
 %% shaw
@@ -63,7 +63,7 @@ t(3) = tictoc(f);
 %x_python = py.airtools.maxent.maxent(A,b,0.00002)
 %py.numpy.testing.assert_array_almost_equal(x_python,x_true)
 
-x_maxent = maxent(A,b,0.001);  
+x_maxent = maxent(A,b,0.001);
 assert_gentle(x_maxent,x_true,'maxent')
 f = @() maxent(A,b,0.001);
 t(4) = tictoc(f);
@@ -82,7 +82,7 @@ function t= tictoc(f)
 if isoctave
   tic, f(); t=toc;
 else
-  t = timeit(f); 
+  t = timeit(f);
 end
 
 end

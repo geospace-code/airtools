@@ -1,19 +1,22 @@
+from __future__ import annotations
 import logging
 import numpy as np
 from numpy.linalg import norm
-from scipy.sparse import issparse
+import scipy.sparse as sp
 
 
-def kaczmarz(A: np.ndarray,
-             b: np.ndarray,
-             *,
-             max_iter: int = 8,
-             x0: np.ndarray = None,
-             lamb: float = 1.,
-             stop_mdp: bool = False,
-             taudelta: float = 0,
-             nonneg: bool = True):
-    '''
+def kaczmarz(
+    A: np.ndarray | sp.spmatrix,
+    b: np.ndarray,
+    *,
+    max_iter: int = 8,
+    x0: np.ndarray = None,
+    lamb: float = 1.0,
+    stop_mdp: bool = False,
+    taudelta: float = 0,
+    nonneg: bool = True
+) -> tuple[np.ndarray, np.ndarray]:
+    """
     Michael Hirsch May 2014
 
     tested with Dense and Sparse arrays. (Aug 2014)
@@ -48,29 +51,32 @@ def kaczmarz(A: np.ndarray,
     ----------
     Herman, G. " Fundamentals of Computerized Tomography", 2nd Ed., Springer, 2009
     Natterer, F. "The mathematics of computed tomography", SIAM, 2001
-    '''
+    """
     if lamb < 0 or lamb > 2:
-        raise ValueError('unstable relaxation parameter')
+        raise ValueError("unstable relaxation parameter")
     if max_iter < 2:
-        raise ValueError('unusable maximum number of iterations')
-# %% user parameters
+        raise ValueError("unusable maximum number of iterations")
+    # %% user parameters
     residual = None  # init
 
     n = A.shape[1]  # only need rows
 
     if x0 is None:  # we'll use zeros
-        x0 = np.zeros(n, order='F')  # 1-D vector
+        x0 = np.zeros(n, order="F")  # 1-D vector
 
     if stop_mdp and taudelta == 0:
-        logging.warning('tauDelta = 0 effectively disables Morozov discrepancy principle')
-# %% disregard all-zero columns of A
-    if issparse(A):
+        logging.warning("tauDelta = 0 effectively disables Morozov discrepancy principle")
+    # %% disregard all-zero columns of A
+    if sp.issparse(A):
+        assert isinstance(A, sp.spmatrix)
         A = A.tocsr()  # save time if it was csc sparse
         # speedup: compute norms along columns at once, and retrieve
-        RowNormSq = np.asarray(A.multiply(A).sum(axis=1)).squeeze()  # 50 times faster than dense for 1024 x 100000 A
+        RowNormSq = np.asarray(
+            A.multiply(A).sum(axis=1)
+        ).squeeze()  # 50 times faster than dense for 1024 x 100000 A
     else:  # is dense A
         # speedup: compute norms along columns at once, and retrieve
-        RowNormSq = norm(A, ord=2, axis=1)**2  # timeit same for norm() and A**2.sum(axis=1)
+        RowNormSq = norm(A, ord=2, axis=1) ** 2  # timeit same for norm() and A**2.sum(axis=1)
 
     goodRows = np.unique(A.nonzero()[0])
 
@@ -83,7 +89,9 @@ def kaczmarz(A: np.ndarray,
             # print(RowNormSq[iRow] == den)
             # num = ( b[iRow] - A[iRow,:] @ x )
             # x += (lamb * num/den) @ A[iRow,:]
-            x += lamb * (b[iRow] - A[iRow, :] @ x) / RowNormSq[iRow] * A[iRow, :]  # first two terms are scalar always
+            x += (
+                lamb * (b[iRow] - A[iRow, :] @ x) / RowNormSq[iRow] * A[iRow, :]
+            )  # first two terms are scalar always
 
             if nonneg:
                 x[x < 0] = 0
@@ -96,6 +104,6 @@ def kaczmarz(A: np.ndarray,
                 break
         if i % 200 == 0:
             residualNorm = norm(b - A @ x, 2)
-            print('Iteration {},  ||residual|| = {:.2f}'.format(i, residualNorm))
+            print("Iteration {},  ||residual|| = {:.2f}".format(i, residualNorm))
 
     return x, residual

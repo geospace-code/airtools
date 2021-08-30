@@ -1,10 +1,12 @@
+# AIRtools
+
 
 [![Actions Status](https://github.com/scivision/airtools/workflows/ci/badge.svg)](https://github.com/scivision/airtools/actions)
 
 [![PyPi versions](https://img.shields.io/pypi/pyversions/airtools.svg)](https://pypi.python.org/pypi/airtools)
 [![PyPi Download stats](http://pepy.tech/badge/airtools)](http://pepy.tech/project/airtools)
 
-# AIRtools
+
 
 Limited subset of P.C. Hansen and J. S. Jørgensen
 [AIRtools 1.0](http://www2.compute.dtu.dk/~pcha/AIRtoolsII/)
@@ -13,7 +15,6 @@ Also includes linear constrained least squares solver using cvxopt in `lsqlin.py
 
 More function are available in Matlab from
 [AIRtools 2](https://github.com/jakobsj/AIRToolsII).
-
 
 ## Install
 

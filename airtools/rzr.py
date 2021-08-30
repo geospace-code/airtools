@@ -1,6 +1,11 @@
+from __future__ import annotations
+import numpy as np
 
-def rzr(A, b=None, Nthr=0):
-    '''
+
+def rzr(
+    A: np.ndarray, b: np.ndarray = None, Nthr: int = 0
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
     rzr  Remove zero rows of A and the corresponding elements of b.
 
     Assumes A,b are Numpy arrays
@@ -22,7 +27,7 @@ def rzr(A, b=None, Nthr=0):
 
      Per Chr. Hansen, October 11, 2011, DTU Compute.
      ported to Python by Michael Hirsch
-    '''
+    """
 
     s = (A > 0).sum(axis=1)  # number of non-zero elements per row
     goodInd = s > Nthr

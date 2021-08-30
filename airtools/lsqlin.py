@@ -1,15 +1,15 @@
-'''
+"""
     A simple library to solve constrained linear least squares problems
     with sparse and dense matrices. Uses cvxopt library for
     optimization
 
     See http://maggotroot.blogspot.ch/2013/11/constrained-linear-least-squares-in.html for more info
-'''
-__author__ = 'Valeriy Vishnevskiy', 'Michael Hirsch'
-__email__ = 'valera.vishnevskiy@yandex.ru'
-__version__ = '1.0'
-__date__ = '22.11.2013'
-__license__ = 'MIT'
+"""
+__author__ = "Valeriy Vishnevskiy", "Michael Hirsch"
+__email__ = "valera.vishnevskiy@yandex.ru"
+__version__ = "1.0"
+__date__ = "22.11.2013"
+__license__ = "MIT"
 
 import numpy as np
 from cvxopt import solvers, matrix, spmatrix
@@ -71,9 +71,9 @@ def numpy_to_cvxopt_matrix(A):
     else:
         if isinstance(A, np.ndarray):
             if A.ndim == 1:
-                return matrix(A, (A.shape[0], 1), 'd')
+                return matrix(A, (A.shape[0], 1), "d")
             else:
-                return matrix(A, A.shape, 'd')
+                return matrix(A, A.shape, "d")
         else:
             return A
 
@@ -89,37 +89,36 @@ def cvxopt_to_numpy_matrix(A):
         return np.asarray(A).squeeze()
 
 
-def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None,
-           lb=None, ub=None, x0=None, opts=None):
-    '''
-        Solve linear constrained l2-regularized least squares. Can
-        handle both dense and sparse matrices. Matlab's lsqlin
-        equivalent. It is actually wrapper around CVXOPT QP solver.
+def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None, lb=None, ub=None, x0=None, opts=None):
+    """
+    Solve linear constrained l2-regularized least squares. Can
+    handle both dense and sparse matrices. Matlab's lsqlin
+    equivalent. It is actually wrapper around CVXOPT QP solver.
 
-            min_x ||C*x  - d||^2_2 + reg * ||x||^2_2
-            s.t.  A * x <= b
-                  Aeq * x = beq
-                  lb <= x <= ub
+        min_x ||C*x  - d||^2_2 + reg * ||x||^2_2
+        s.t.  A * x <= b
+              Aeq * x = beq
+              lb <= x <= ub
 
-        Input arguments:
-            C   is m x n dense or sparse matrix
-            d   is n x 1 dense matrix
-            reg is regularization parameter
-            A   is p x n dense or sparse matrix
-            b   is p x 1 dense matrix
-            Aeq is q x n dense or sparse matrix
-            beq is q x 1 dense matrix
-            lb  is n x 1 matrix or scalar
-            ub  is n x 1 matrix or scalar
+    Input arguments:
+        C   is m x n dense or sparse matrix
+        d   is n x 1 dense matrix
+        reg is regularization parameter
+        A   is p x n dense or sparse matrix
+        b   is p x 1 dense matrix
+        Aeq is q x n dense or sparse matrix
+        beq is q x 1 dense matrix
+        lb  is n x 1 matrix or scalar
+        ub  is n x 1 matrix or scalar
 
-        Output arguments:
-            Return dictionary, the output of CVXOPT QP.
+    Output arguments:
+        Return dictionary, the output of CVXOPT QP.
 
-        Dont pass matlab-like empty lists to avoid setting parameters,
-        just use None:
-            lsqlin(C, d, 0.05, None, None, Aeq, beq) #Correct
-            lsqlin(C, d, 0.05, [], [], Aeq, beq) #Wrong!
-    '''
+    Dont pass matlab-like empty lists to avoid setting parameters,
+    just use None:
+        lsqlin(C, d, 0.05, None, None, Aeq, beq) #Correct
+        lsqlin(C, d, 0.05, [], [], Aeq, beq) #Wrong!
+    """
     if sparse.issparse(A):  # detects both np and cxopt sparse
         sparse_case = True
         # We need A to be scipy sparse, as I couldn't find how
@@ -132,15 +131,14 @@ def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None,
     C = numpy_to_cvxopt_matrix(C)
     d = numpy_to_cvxopt_matrix(d)
     Q = C.T * C
-    q = - d.T * C
+    q = -d.T * C
     nvars = C.size[1]
 
     if reg > 0:
         if sparse_case:
-            i = scipy_sparse_to_spmatrix(sparse.eye(nvars, nvars,
-                                                    format='coo'))
+            i = scipy_sparse_to_spmatrix(sparse.eye(nvars, nvars, format="coo"))
         else:
-            i = matrix(np.eye(nvars), (nvars, nvars), 'd')
+            i = matrix(np.eye(nvars), (nvars, nvars), "d")
         Q = Q + reg * i
 
     lb = cvxopt_to_numpy_matrix(lb)
@@ -152,7 +150,7 @@ def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None,
             lb = np.repeat(lb, nvars)
 
         if sparse_case:
-            lb_A = -sparse.eye(nvars, nvars, format='coo')
+            lb_A = -sparse.eye(nvars, nvars, format="coo")
             A = sparse_None_vstack(A, lb_A)
         else:
             lb_A = -np.eye(nvars)
@@ -162,7 +160,7 @@ def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None,
         if ub.size == 1:
             ub = np.repeat(ub, nvars)
         if sparse_case:
-            ub_A = sparse.eye(nvars, nvars, format='coo')
+            ub_A = sparse.eye(nvars, nvars, format="coo")
             A = sparse_None_vstack(A, ub_A)
         else:
             ub_A = np.eye(nvars)
@@ -186,10 +184,11 @@ def lsqlin(C, d, reg=0, A=None, b=None, Aeq=None, beq=None,
 
 
 def lsqnonneg(C, d, opts):
-    '''
+    """
     Solves nonnegative linear least-squares problem:
 
     min_x ||C*x - d||_2^2,  where x >= 0
-    '''
-    return lsqlin(C, d, reg=0, A=None, b=None, Aeq=None,
-                  beq=None, lb=0, ub=None, x0=None, opts=opts)
+    """
+    return lsqlin(
+        C, d, reg=0, A=None, b=None, Aeq=None, beq=None, lb=0, ub=None, x0=None, opts=opts
+    )

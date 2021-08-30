@@ -1,20 +1,24 @@
-#!/usr/bin/env python
+from __future__ import annotations
+import numpy as np
+import math
+
 """
 solve b=Ax using parallel log-entropy MART  (De Pierro 1991)
 
 Original Matlab by Joshua Semeter
 port to Python by Michael Hirsch
 """
-import numpy as np
-import math
 
 
-def logmart(A: np.ndarray, b: np.ndarray,
-            *,
-            relax: float = 1.,
-            x0: float = None,
-            sigma: float = 1.,
-            max_iter: int = 20) -> tuple:
+def logmart(
+    A: np.ndarray,
+    b: np.ndarray,
+    *,
+    relax: float = 1.0,
+    x0: float = None,
+    sigma: float = 1.0,
+    max_iter: int = 20
+) -> tuple[np.ndarray, float, int]:
     """
     estimation halted based on chi**2 value
     A and b must be all NON-NEGATIVE!
@@ -37,24 +41,24 @@ def logmart(A: np.ndarray, b: np.ndarray,
     >>> x = np.array([1,2,3])
     >>> b = A @ x
     """
-# %% parameter check
+    # %% parameter check
     if b.ndim != 1:
-        raise ValueError('y must be a column vector')
+        raise ValueError("y must be a column vector")
     if A.ndim != 2:
-        raise ValueError('A must be a matrix')
+        raise ValueError("A must be a matrix")
     if A.shape[0] != b.size:
-        raise ValueError('A and b: number of rows must match')
+        raise ValueError("A and b: number of rows must match")
     if not isinstance(relax, (int, float)):
-        raise ValueError('relax is a scalar float')
+        raise ValueError("relax is a scalar float")
     if (A < 0).any():
-        raise ValueError('A must be all non-negative')
+        raise ValueError("A must be all non-negative")
     if (b < 0).any():
-        raise ValueError('b must be all non-negative')
+        raise ValueError("b must be all non-negative")
 
     b = b.copy()  # needed to avoid modifying outside this function!
     # %% make sure there are no 0's in b
     b[b <= 1e-8] = 1e-8
-# %% set defaults
+    # %% set defaults
     if x0 is None:  # backproject
         x = A.T @ b / A.sum()
         x *= b.max() / (A @ x).max()
@@ -63,7 +67,7 @@ def logmart(A: np.ndarray, b: np.ndarray,
     else:
         x = x0
     if not x.size == A.shape[1]:
-        raise ValueError('x0 must be scalar or match Ncolumns of A')
+        raise ValueError("x0 must be scalar or match Ncolumns of A")
 
     x[x < 1e-8] = 1e-8
     # W=sigma;
@@ -73,14 +77,14 @@ def logmart(A: np.ndarray, b: np.ndarray,
     W = W / W.sum()
 
     chi2 = chi_squared(A, b, x, sigma)
-# %%  iterate solution, plot estimated data (diag elems of x#A)
+    # %%  iterate solution, plot estimated data (diag elems of x#A)
     for i in range(max_iter):
         x_prev = x
         xA = A @ x
-        t = (1/xA).min()
-        C = relax * t * (1 - xA/b)
-        x /= (1 - x*(A.T @ (W*C)))
-# %% monitor solution
+        t = (1 / xA).min()
+        C = relax * t * (1 - xA / b)
+        x /= 1 - x * (A.T @ (W * C))
+        # %% monitor solution
         chiold = chi2
         chi2 = chi_squared(A, b, x, sigma)
         if i > 1 and chi2 >= chiold:
@@ -92,4 +96,4 @@ def logmart(A: np.ndarray, b: np.ndarray,
 
 
 def chi_squared(A: np.ndarray, b: np.ndarray, x: np.ndarray, sigma: float) -> float:
-    return math.sqrt((((A @ x - b)/sigma)**2).sum())
+    return math.sqrt((((A @ x - b) / sigma) ** 2).sum())

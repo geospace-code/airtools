@@ -1,6 +1,8 @@
+from __future__ import annotations
 import logging
 import numpy as np
-'''
+
+"""
 PICARD Visual inspection of the Picard condition.
 
  eta = picard(U,s,b,d)
@@ -22,43 +24,49 @@ PICARD Visual inspection of the Picard condition.
 
  Per Christian Hansen, IMM, April 14, 2001.
  ported to Python by Michael Hirsch
-'''
+"""
 
 
-def picard(U, s, b, d=0) -> tuple:
+def picard(U, s, b, d=0) -> tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray, int]:
 
     n, ps = np.atleast_2d(s).T.shape
 
     beta = np.abs(np.asfortranarray(U[:, :n]).T.dot(b))
-    eta = np.zeros(n, order='F')
+    eta = np.zeros(n, order="F")
 
     if ps == 2:
         s = s[:, 0] / s[:, 1]
 
     d21 = 2 * d + 1
-    keta = np.arange(d, n-d)
+    keta = np.arange(d, n - d)
 
     if (s == 0).any():  # 10**-14 is OK?
-        logging.warning('** picard: Division by zero: singular values')
+        logging.warning("** picard: Division by zero: singular values")
 
     for i in keta:
-        es = np.s_[i-d:i+d+1]
-        eta[i] = (beta[es].prod()**(1/d21)) / s[i]
+        es = np.s_[i - d : i + d + 1]
+        eta[i] = (beta[es].prod() ** (1 / d21)) / s[i]
 
     return eta, n, s, beta, keta, ps
 
 
-def plotpicard(n, s, beta, eta, keta, ps):
+def plotpicard(
+    n: int, s: np.ndarray, beta: np.ndarray, eta: np.ndarray, keta: np.ndarray, ps: int
+):
     from matplotlib.pyplot import figure
+
     ni = np.arange(n)
     ax = figure().gca()
-    ax.semilogy(ni, s, '.-')  # breaks for inf
-    ax.semilogy(ni, beta, 'x')  # breaks for inf
-    ax.semilogy(keta, eta[keta], 'o')
-    ax.set_xlabel('i')
-    ax.set_title('Picard plot')
+    ax.semilogy(ni, s, ".-")  # breaks for inf
+    ax.semilogy(ni, beta, "x")  # breaks for inf
+    ax.semilogy(keta, eta[keta], "o")
+    ax.set_xlabel("i")
+    ax.set_title("Picard plot")
     # ax.autoscale(True,tight=True)
     if ps == 1:
-        ax.legend((r'$\sigma_i$', r'$|u_i^T b|$', r'$|u_i^T b|/\sigma_i$'), loc='lower left')
+        ax.legend((r"$\sigma_i$", r"$|u_i^T b|$", r"$|u_i^T b|/\sigma_i$"), loc="lower left")
     else:
-        ax.legend((r'$\sigma_i/\mu_i$', r'$|u_i^T b|$', r'$|u_i^T b|/ (\sigma_i/\mu_i)$'), loc='lower left')
+        ax.legend(
+            (r"$\sigma_i/\mu_i$", r"$|u_i^T b|$", r"$|u_i^T b|/ (\sigma_i/\mu_i)$"),
+            loc="lower left",
+        )
