@@ -33,7 +33,9 @@ jobs:
       with:
         python-version: '3.x'
 
-    - run: sudo apt install -yq --no-install-recommends octave
+    - run: |
+        sudo apt update
+        sudo apt install --no-install-recommends octave
 
     - run: pip install oct2py
     - run: pip install .[tests,lint]

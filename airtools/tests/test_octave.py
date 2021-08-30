@@ -1,11 +1,10 @@
-#!/usr/bin/env python
 import numpy as np
 import pytest
 from pytest import approx
 from pathlib import Path
 import airtools
 
-Rmatlab = Path(__file__).resolve().parents[1] / "matlab"
+Rmatlab = Path(__file__).resolve().parents[2] / "matlab"
 """
 generate test problems from Julia by
 
@@ -69,7 +68,3 @@ def test_logmart(matrices, name):
 
     x_est = airtools.logmart(A, b, relax=relax, sigma=sigma, max_iter=max_iter)[0]
     assert x_est == approx(x_matlab, rel=1e-5)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

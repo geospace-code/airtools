@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 generate test problems from Julia by:
 https://github.com/JuliaMatrices/MatrixDepot.jl
@@ -118,7 +117,3 @@ def test_lsqlin():
     d = np.array([0.8587, 0.1781, 0.0747, 0.8405])
     ret = lsqlin.lsqnonneg(C, d, {"show_progress": False})
     assert ret["x"] == approx([2.5e-7, 6.93e-1], rel=1e-2)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])
