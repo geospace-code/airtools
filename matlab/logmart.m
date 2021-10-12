@@ -18,32 +18,24 @@ function [ x,y_est,chi2,i ] = logmart( y,A,relax,x0,sigma,max_iter )
 % A=diag([5 5 5]);
 % x=[1;2;3];
 % y=A*x;
-narginchk(2,6)
-assert(iscolumn(y),'y must be a column vector')
-validateattributes(y, {'numeric'}, {'nonnegative', 'vector'})
-validateattributes(A, {'numeric'}, {'nonnegative', 'ndims', 2})
-assert(size(A,1)==size(y,1),'A and y row numbers must match')
-%% set defaults
-if (nargin<6), max_iter=200.; end
-if (nargin<5), sigma=1.; end
+arguments
+y (:,1) {mustBeNumeric,mustBeNonnegative}
+A (:,:) {mustBeNumeric,mustBeNonnegative}
+relax (1,1) {mustBePositive} = 20
+x0 {mustBeNumeric,mustBeNonnegative} = []
+sigma (1,1) {mustBeNumeric,mustBePositive} = 1
+max_iter (1,1) {mustBeInteger, mustBePositive} = 20
+end
 %% make sure there are no 0's in y
-y(y<=1e-8)=1e-8;
+y(y<=1e-8) = 1e-8;
 
-if (nargin<4) || isempty(x0)
+if isempty(x0)
     x=(A'*y)./sum(A(:));
     xA=A*x;
     x=x.*max(y(:))/max(xA(:));
-%    max(x(:))
-
 else
     x=x0;
 end
-if (nargin<3), relax=1; end
-validateattributes(x0, {'numeric'}, {'nonnegative'})
-validateattributes(relax, {'numeric'}, {'scalar', 'positive'})
-validateattributes(sigma, {'numeric'}, {'scalar', 'positive'})
-validateattributes(max_iter, {'numeric'}, {'scalar', 'positive'})
-
 
 % W=sigma;
 % W=linspace(1,0,size(A,1))';

@@ -1,4 +1,4 @@
-function [U,s,V] = csvd(A,tst)
+function [U,s,V] = csvd(A)
 %CSVD Compact singular value decomposition.
 %
 % s = csvd(A)
