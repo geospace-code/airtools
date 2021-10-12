@@ -62,8 +62,6 @@ x_true = tc.TestData.(name).x_true;
 
 x_inv = A\b;
 tc.verifyEqual(x_inv, x_true, 'RelTol', 0.005)
-f = @() A\b;
-t(1) = timeit(f);
 end
 
 function test_pseudoinv(tc, name)
