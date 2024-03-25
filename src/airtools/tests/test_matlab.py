@@ -9,10 +9,10 @@ import airtools
 
 try:
     from .matlab_engine import matlab_engine
-except ImportError:
-    pytest.skip("Matlab Engine not found", allow_module_level=True)
-except RuntimeError:
-    pytest.skip("Matlab Engine configuration error", allow_module_level=True)
+
+    matlab_skip = False
+except (ImportError, RuntimeError):
+    matlab_skip = True
 
 
 Rmatlab = Path(__file__).resolve().parents[3]
@@ -26,6 +26,7 @@ x = np.array([1.0, 3.0, 0.5, 2.0])
 used = ("identity", "fiedler")
 
 
+@pytest.mark.skipif(matlab_skip, reason="Matlab Engine not available")
 @pytest.mark.parametrize("name", used)
 def test_maxent(matrices, name):
 
@@ -44,6 +45,7 @@ def test_maxent(matrices, name):
     assert x_est == approx(x_matlab)
 
 
+@pytest.mark.skipif(matlab_skip, reason="Matlab Engine not available")
 @pytest.mark.parametrize("name", used)
 def test_kaczmarz(matrices, name):
 
@@ -63,6 +65,7 @@ def test_kaczmarz(matrices, name):
     assert x_est == approx(x_matlab)
 
 
+@pytest.mark.skipif(matlab_skip, reason="Matlab Engine not available")
 @pytest.mark.parametrize("name", used)
 def test_logmart(matrices, name):
 
