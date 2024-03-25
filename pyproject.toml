@@ -17,7 +17,7 @@ classifiers = [
   "Topic :: Utilities"
 ]
 dependencies = ["scipy", "numpy"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dynamic = ["version", "readme"]
 
 [tool.setuptools.dynamic]

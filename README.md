@@ -29,14 +29,3 @@ python -m pip install -e .
 * fortran/logmart.f90: log-MART in Fortran
 
 Examples: [tests/test_all.py](./tests/test_all.py)
-
-### Tests
-
-Run a comparison of the Python code with the Matlab code in the [matlab](./matlab) directory by:
-
-```sh
-python airtools/tests/test_octave.py
-```
-
-which runs the Matlab version via
-[Oct2Py](https://blink1073.github.io/oct2py/).
