@@ -11,14 +11,14 @@ port to Python by Michael Hirsch
 
 
 def logmart(
-    A: np.ndarray,
-    b: np.ndarray,
+    A,
+    b,
     *,
     relax: float = 1.0,
-    x0: float = None,
+    x0: float | None = None,
     sigma: float = 1.0,
-    max_iter: int = 20
-) -> tuple[np.ndarray, float, int]:
+    max_iter: int = 20,
+) -> tuple:
     """
     estimation halted based on chi**2 value
     A and b must be all NON-NEGATIVE!
@@ -95,5 +95,5 @@ def logmart(
     return x_prev, chi2, i
 
 
-def chi_squared(A: np.ndarray, b: np.ndarray, x: np.ndarray, sigma: float) -> float:
+def chi_squared(A, b, x, sigma: float) -> float:
     return math.sqrt((((A @ x - b) / sigma) ** 2).sum())

@@ -1,5 +1,5 @@
 project('airtools', 'fortran',
-  default_options : ['default_library=static', 'buildtype=release'])
+  default_options : ['buildtype=release'])
 
 
 art = library('art', 'fortran/logmart.f90')

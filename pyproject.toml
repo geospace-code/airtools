@@ -1,5 +1,37 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "airtools"
+description = "Python port of Matlab AIRtools and ReguTools regularization toolbox"
+keywords = [ "regularization", "linear algebra" ]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Utilities"
+]
+dependencies = ["scipy", "numpy"]
+requires-python = ">=3.8"
+dynamic = ["version", "readme"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
+version = {attr = "airtools.__version__"}
+
+[project.optional-dependencies]
+tests = ["pytest"]
+lint = ["flake8", "flake8-bugbear", "flake8-builtins", "flake8-blind-except", "mypy",
+  "types-python-dateutil", "types-requests"]
+
+[tool.mypy]
+files = ["src"]
+ignore_missing_imports = true
 
 [tool.black]
 line-length = 99

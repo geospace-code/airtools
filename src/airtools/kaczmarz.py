@@ -1,21 +1,22 @@
 from __future__ import annotations
 import logging
+
 import numpy as np
 from numpy.linalg import norm
 import scipy.sparse as sp
 
 
 def kaczmarz(
-    A: np.ndarray | sp.spmatrix,
-    b: np.ndarray,
+    A,
+    b,
     *,
     max_iter: int = 8,
-    x0: np.ndarray = None,
+    x0=None,
     lamb: float = 1.0,
     stop_mdp: bool = False,
     taudelta: float = 0,
-    nonneg: bool = True
-) -> tuple[np.ndarray, np.ndarray]:
+    nonneg: bool = True,
+) -> tuple:
     """
     Michael Hirsch May 2014
 
@@ -104,6 +105,6 @@ def kaczmarz(
                 break
         if i % 200 == 0:
             residualNorm = norm(b - A @ x, 2)
-            print("Iteration {},  ||residual|| = {:.2f}".format(i, residualNorm))
+            print(f"Iteration {i},  ||residual|| = {residualNorm:.2f}")
 
     return x, residual

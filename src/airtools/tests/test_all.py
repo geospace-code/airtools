@@ -7,6 +7,7 @@ matrixdepot("hilb", 3)
 
 ref: https://www.maths.manchester.ac.uk/~higham/narep/narep172.pdf
 """
+
 import pytest
 from pytest import approx
 from numpy.linalg import svd

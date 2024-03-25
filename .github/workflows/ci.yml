@@ -5,18 +5,15 @@ on:
     paths:
     - "**/*.py"
     - "**/*.f90"
-  pull_request:
-    paths:
-    - "**/*.py"
-    - "**/*.f90"
+
 
 jobs:
 
   fortran:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -25,36 +22,30 @@ jobs:
     - run: meson setup build
     - run: meson test -C build
 
-  linux:
-    runs-on: ubuntu-latest
+  python:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
-    - run: |
-        sudo apt update
-        sudo apt install --no-install-recommends octave
+    - name: Install GNU Octave
+      if: runner.os == 'Linux'
+      run: sudo apt install --no-install-recommends octave
 
-    - run: pip install oct2py
+    - name: Install Oct2Py
+      if: runner.os == 'Linux'
+      run: pip install oct2py
+
     - run: pip install .[tests,lint]
 
     - run: flake8
     - run: mypy
 
-    - run: pytest
-
-  integration:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - run: pip install .[tests]
     - run: pytest

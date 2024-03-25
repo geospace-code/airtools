@@ -1,10 +1,7 @@
 from __future__ import annotations
-import numpy as np
 
 
-def rzr(
-    A: np.ndarray, b: np.ndarray = None, Nthr: int = 0
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def rzr(A, b=None, Nthr: int = 0) -> tuple:
     """
     rzr  Remove zero rows of A and the corresponding elements of b.
 

@@ -5,6 +5,7 @@
 
     See http://maggotroot.blogspot.ch/2013/11/constrained-linear-least-squares-in.html for more info
 """
+
 __author__ = "Valeriy Vishnevskiy", "Michael Hirsch"
 __email__ = "valera.vishnevskiy@yandex.ru"
 __version__ = "1.0"

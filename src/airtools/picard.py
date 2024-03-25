@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+
 import numpy as np
 
 """
@@ -27,7 +28,7 @@ PICARD Visual inspection of the Picard condition.
 """
 
 
-def picard(U, s, b, d=0) -> tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray, int]:
+def picard(U, s, b, d=0) -> tuple:
 
     n, ps = np.atleast_2d(s).T.shape
 

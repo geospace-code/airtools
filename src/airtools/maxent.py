@@ -1,9 +1,11 @@
-from numpy import atleast_2d, log, atleast_1d, zeros, ones, empty, spacing, array
-from numpy.linalg import norm
+from __future__ import annotations
 from warnings import warn
 
+from numpy import atleast_2d, log, atleast_1d, zeros, ones, empty, spacing, array
+from numpy.linalg import norm
 
-def maxent(A, b, lamb, w=None, x0=None):
+
+def maxent(A, b, lamb, w=None, x0=None) -> tuple:
     """
     MAXENT Maximum entropy regularization.
 
@@ -85,7 +87,7 @@ def maxent(A, b, lamb, w=None, x0=None):
 
         # Start the nonlinear CG iteration here.
         delta_x = x
-        dF = 1
+        dF: float = 1.0
         it = 0
         phi0 = p.T.dot(g)
         data = zeros((maxit, 3), dtype=float, order="F")
