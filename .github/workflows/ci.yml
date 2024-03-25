@@ -6,21 +6,23 @@ on:
     - "**/*.py"
     - "**/*.f90"
 
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
+  CTEST_PARALLEL_LEVEL: 0
+  CTEST_NO_TESTS_ACTION: error
+
 
 jobs:
 
   fortran:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
 
-    - run: pip install meson ninja
-
-    - run: meson setup build
-    - run: meson test -C build
+    - run: cmake -Bbuild
+    - run: cmake --build build
+    - run: ctest --test-dir build -V
 
   python:
     runs-on: ${{ matrix.os }}
@@ -34,14 +36,6 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-
-    - name: Install GNU Octave
-      if: runner.os == 'Linux'
-      run: sudo apt install --no-install-recommends octave
-
-    - name: Install Oct2Py
-      if: runner.os == 'Linux'
-      run: pip install oct2py
 
     - run: pip install .[tests,lint]
 

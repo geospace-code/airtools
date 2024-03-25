@@ -6,7 +6,7 @@ program test_logmart
 
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 use art, only: logmart
-use random_utils, only: init_random_seed, randn, wp
+use random_utils, only: randn, wp
 
 implicit none
 
@@ -15,7 +15,7 @@ real(wp), dimension(N,M) :: A1, A2
 real(wp) :: x(M)
 logical :: ok=.true., add_noise = .true.
 
-call init_random_seed()
+call random_init(.false., .false.)
 
 A1 = reshape([5,0,0,0, &
               0,5,0,0, &
@@ -31,12 +31,12 @@ x = [1._wp, 3._wp, 0.5_wp, 2._wp]
 
 if (.not. run_test(A1, x, 20,add_noise)) then
   ok = .false.
-  write(stderr,*) 'failed on identity test'
+  write(stderr, '(a)') 'failed on identity test'
 endif
 
 if (.not. run_test(A2, x, 2000, add_noise)) then
   ok = .false.
-  write(stderr,*) 'failed on Fiedler test'
+  write(stderr, '(a)') 'failed on Fiedler test'
 endif
 
 if (.not. ok) error stop
@@ -58,7 +58,7 @@ run_test = .true.
 
 block
 integer :: i
-print *, 'A ='
+print '(a)', 'A ='
 do i = 1,size(A,1)
   print '(3F10.3)', A(i,:)
 enddo

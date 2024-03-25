@@ -4,7 +4,7 @@ from pytest import approx
 from pathlib import Path
 import airtools
 
-Rmatlab = Path(__file__).resolve().parents[2] / "matlab"
+Rmatlab = Path(__file__).resolve().parents[2] / "+airtools"
 """
 generate test problems from Julia by
 
