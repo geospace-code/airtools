@@ -43,3 +43,33 @@ jobs:
     - run: mypy
 
     - run: pytest
+
+  matlab:
+    timeout-minutes: 15
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        release: [R2024a]
+
+    steps:
+
+    - name: Install MATLAB
+      uses: matlab-actions/setup-matlab@v2
+      with:
+        release: ${{ matrix.release }}
+
+    - uses: actions/checkout@v4
+
+    - name: Run Matlab tests (buildtool)
+      if: ${{ matrix.release >= 'R2022b' }}
+      timeout-minutes: 10
+      uses: matlab-actions/run-build@v2
+
+    - name: Run tests (manual)
+      if: ${{ matrix.release < 'R2022b' }}
+      timeout-minutes: 10
+      uses: matlab-actions/run-tests@v2
+      with:
+        select-by-folder: +airtools

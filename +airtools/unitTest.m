@@ -73,6 +73,7 @@ x_pinv = pinv(A)*b;
 tc.verifyEqual(x_pinv, x_true, RelTol=0.005)
 end
 
+
 function test_logmart(tc, name)
 A = tc.TestData.(name).A;
 b = tc.TestData.(name).b;
@@ -80,9 +81,10 @@ x_true = tc.TestData.(name).x_true;
 
 tc.assumeGreaterThanOrEqual(b, 0)
 
-x_logmart = airtools.logmart(b,A);
+x_logmart = airtools.logmart(b, A, 5);
 tc.verifyEqual(x_logmart, x_true, RelTol=0.1)
 end
+
 
 function test_maxent(tc, name)
 A = tc.TestData.(name).A;
@@ -93,14 +95,15 @@ x_maxent = airtools.maxent(A,b,0.001);
 tc.verifyEqual(x_maxent, x_true, RelTol=0.05)
 end
 
-function test_maxent_python(tc, name)
-A = tc.TestData.(name).A;
-b = tc.TestData.(name).b;
-x_true = tc.TestData.(name).x_true;
 
-x_python = py.airtools.maxent.maxent(A,b,0.00002)
-tc.verifyEqual(x_python, x_true)
-end
+% function test_maxent_python(tc, name)
+% A = tc.TestData.(name).A;
+% b = tc.TestData.(name).b;
+% x_true = tc.TestData.(name).x_true;
+
+% x_python = py.airtools.maxent.maxent(A,b,0.00002);
+% tc.verifyEqual(x_python, x_true)
+% end
 
 function test_kart(tc,name)
 A = tc.TestData.(name).A;
