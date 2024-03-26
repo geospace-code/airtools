@@ -29,7 +29,6 @@ PICARD Visual inspection of the Picard condition.
 
 
 def picard(U, s, b, d=0) -> tuple:
-
     n, ps = np.atleast_2d(s).T.shape
 
     beta = np.abs(np.asfortranarray(U[:, :n]).T.dot(b))

@@ -15,7 +15,9 @@ def matrices(name: str) -> np.ndarray:
                 [0.126491, 0.357771, 1.41421, 4.0],
             ]
         ),
-        "fiedler": np.array([[0, 1, 2, 3], [1, 0, 1, 2], [2, 1, 0, 1], [3, 2, 1, 0]]),
+        "fiedler": np.array(
+            [[0, 1, 2, 3], [1, 0, 1, 2], [2, 1, 0, 1], [3, 2, 1, 0]], dtype=np.float64
+        ),
         "hilbert": np.array(
             [
                 [1.0, 1 / 2, 1 / 3, 1 / 4],

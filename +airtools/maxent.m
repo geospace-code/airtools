@@ -32,7 +32,7 @@ sigma = 0.5;     % Threshold used in descent test.
 tau0 = 1e-3;     % Initial threshold used in secant root finder.
 
 % Initialization.
-[m,n] = size(A); x_lambda = zeros(n,length(lambda)); F = zeros(maxit,1);
+n = size(A,2); x_lambda = zeros(n,length(lambda)); F = zeros(maxit,1);
 if (min(lambda) <= 0)
   error('Regularization parameter lambda must be positive')
 end
@@ -51,7 +51,7 @@ for j=1:length(lambda)
 
   % Start the nonlinear CG iteration here.
   delta_x = x; dF = 1; it = 0; phi0 = p'*g;
-  while (norm(delta_x) > minstep*norm(x) && dF > flat && it < maxit && phi0 < 0)
+  while (all(norm(delta_x) > minstep*norm(x), 'all') && dF > flat && it < maxit && all(phi0 < 0, 'all'))
     it = it + 1;
 
     % Compute some CG quantities.

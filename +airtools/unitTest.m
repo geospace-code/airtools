@@ -50,8 +50,8 @@ function test_condition(tc, name)
 %% well-posed, well-conditioned problem?
 A = tc.TestData.(name).A;
 b = tc.TestData.(name).b;
-[U,s] = csvd(A);
-picard(U, s, b);
+[U,s] = airtools.csvd(A);
+airtools.picard(U, s, b);
 disp("Condition #: " + num2str(cond(A)))
 end
 
@@ -70,7 +70,7 @@ b = tc.TestData.(name).b;
 x_true = tc.TestData.(name).x_true;
 
 x_pinv = pinv(A)*b;
-tc.verifyEqual(x_pinv, x_true, 'RelTol', 0.005)
+tc.verifyEqual(x_pinv, x_true, RelTol=0.005)
 end
 
 function test_logmart(tc, name)
@@ -80,19 +80,26 @@ x_true = tc.TestData.(name).x_true;
 
 tc.assumeGreaterThanOrEqual(b, 0)
 
-x_logmart = logmart(b,A);
-tc.verifyEqual(x_logmart, x_true, 'RelTol', 0.1)
+x_logmart = airtools.logmart(b,A);
+tc.verifyEqual(x_logmart, x_true, RelTol=0.1)
 end
 
 function test_maxent(tc, name)
 A = tc.TestData.(name).A;
 b = tc.TestData.(name).b;
 x_true = tc.TestData.(name).x_true;
-% x_python = py.airtools.maxent.maxent(A,b,0.00002)
-% py.numpy.testing.assert_array_almost_equal(x_python,x_true)
 
-x_maxent = maxent(A,b,0.001);
-tc.verifyEqual(x_maxent, x_true, 'RelTol', 0.05, 'maxent')
+x_maxent = airtools.maxent(A,b,0.001);
+tc.verifyEqual(x_maxent, x_true, RelTol=0.05)
+end
+
+function test_maxent_python(tc, name)
+A = tc.TestData.(name).A;
+b = tc.TestData.(name).b;
+x_true = tc.TestData.(name).x_true;
+
+x_python = py.airtools.maxent.maxent(A,b,0.00002)
+tc.verifyEqual(x_python, x_true)
 end
 
 function test_kart(tc,name)
@@ -102,8 +109,8 @@ x_true = tc.TestData.(name).x_true;
 % x_python = py.airtools.kaczmarz.kaczmarz(A,b,200)[0]
 % py.numpy.testing.assert_array_almost_equal(x_python,x_true)
 %
-x_kaczmarz = kaczmarz(A,b,250);
-tc.verifyEqual(x_kaczmarz, x_true, 'RelTol', 0.05, 'kaczmarz ART')
+x_kaczmarz = airtools.kaczmarz(A,b,250);
+tc.verifyEqual(x_kaczmarz, x_true, RelTol=0.05)
 end
 
 end

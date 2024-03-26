@@ -64,8 +64,10 @@ if nargin < 4 || isempty(x0)
 end
 
 % The sizes of A, b and x must match.
-if size(b,1) ~= m || size(b,2) ~= 1
-    error('The sizes of A and b do not match')
+if size(b,1) ~= m
+    error("rows of A " + int2str(m) + " and columns of b " + int2str(size(b,1)) + " do not match")
+elseif size(b,2) ~= 1
+    error('b must be a column vector')
 elseif size(x0,1) ~= n || size(x0,2) ~= 1
     error('The size of x0 does not match the problem')
 end

@@ -30,9 +30,9 @@ end
 y(y<=1e-8) = 1e-8;
 
 if isempty(x0)
-    x=(A'*y)./sum(A(:));
-    xA=A*x;
-    x=x.*max(y(:))/max(xA(:));
+    x = (A'*y) ./ sum(A(:));
+    xA = A*x;
+    x = x.*max(y(:)) / max(xA(:));
 else
     x=x0;
 end

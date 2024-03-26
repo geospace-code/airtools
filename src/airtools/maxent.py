@@ -76,7 +76,6 @@ def maxent(A, b, lamb, w=None, x0=None) -> tuple:
 
     # Treat each lambda separately.
     for j in range(Nlambda):
-
         # Prepare for nonlinear CG iteration.
         l2 = lamb[j] ** 2.0
         x = x0
