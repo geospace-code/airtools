@@ -1,6 +1,7 @@
 # AIRtools
 
 [![Actions Status](https://github.com/geospace-code/airtools/workflows/ci/badge.svg)](https://github.com/geospace-code/airtools/actions)
+[![ci_matlab](https://github.com/geospace-code/airtools/actions/workflows/ci_matlab.yml/badge.svg)](https://github.com/geospace-code/airtools/actions/workflows/ci_matlab.yml)
 [![PyPI Download stats](http://pepy.tech/badge/airtools)](http://pepy.tech/project/airtools)
 
 
